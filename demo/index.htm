@@ -1,0 +1,80 @@
+<html>
+    <head>
+        <title>Cool Roadmap Demo</title>
+        <link rel="stylesheet" href="../dist/CoolRoadmap.min.css">
+    </head>
+    <body>
+        <h1>Cool Roadmap Demo</h1>
+
+        <div id='CoolRoadmapWrapper'></div>
+
+        Stuff after
+
+        <script src='../dist/CoolRoadmap.min.js'></script>
+        <script>
+            var myroadmap = new roadmap('CoolRoadmapWrapper');
+
+            myroadmap.columns([
+                "C Hub",
+                "C SDK",
+                "Core",
+                "Voyager"
+            ])
+
+            myroadmap.milestones([
+                {
+                    title: "Rank 0 - col 1",
+                    description: "Discriptive text",
+                    belongsToColumn: 1,
+                    forwardConnect: [2, 2],
+                    rank: 0
+                },
+                {
+                    title: "Rank 1 - col 1",
+                    description: "Discriptive text",
+                    belongsToColumn: 1,
+                    forwardConnect: [1, 1],
+                    rank: 1
+                },
+                {
+                    title: "Rank 2 - col 1",
+                    description: "Discriptive text",
+                    belongsToColumn: 1,
+                    rank: 2
+                },
+                {
+                    title: "Rank 1 - col 2",
+                    description: "Discriptive text",
+                    belongsToColumn: 2,
+                    forwardConnect: [1, 1],
+                    rank: 1
+                },
+                {
+                    title: "Rank 2 - col 2",
+                    description: "Discriptive text",
+                    belongsToColumn: 2,
+                    forwardConnect: [3, 1],
+                    rank: 2
+                },
+                {
+                    title: "Rank 0 - col 3",
+                    description: "Discriptive text",
+                    belongsToColumn: 3,
+                    forwardConnect: [1, 3],
+                    rank: 0
+                },
+                {
+                    title: "Rank 2 - col 3",
+                    description: "Discriptive text",
+                    belongsToColumn: 3,
+                    rank: 2
+                },
+                {
+                    spacer: true,
+                    belongsToColumn: 3,
+                    rank: 1
+                }
+            ])
+        </script>
+    </body>
+</html>
