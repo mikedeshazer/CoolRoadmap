@@ -1,0 +1,24 @@
+{
+  "name": "coolroadmap",
+  "version": "0.1.0",
+  "description": "Roadmap Visualization",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mikedeshazer/CoolRoadmap.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mikedeshazer/CoolRoadmap/issues"
+  },
+  "homepage": "https://github.com/mikedeshazer/CoolRoadmap#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-csso": "^3.0.1",
+    "gulp-sourcemaps": "^2.6.4"
+  }
+}
