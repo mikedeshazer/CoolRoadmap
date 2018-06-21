@@ -1,0 +1,117 @@
+<html>
+    <head>
+        <title>Cool Roadmap Demo</title>
+        <link rel="stylesheet" href="../dist/CoolRoadmap.min.css">
+    </head>
+    <body>
+        <h1>Cool Roadmap Demo - 10 Column</h1>
+
+        <div id='CoolRoadmapWrapper'></div>
+
+        <script src='../dist/CoolRoadmap.min.js'></script>
+        <script>
+            var myroadmap = new roadmap('CoolRoadmapWrapper');
+
+            myroadmap.columns([
+                "Column 1",
+                "Column 2",
+                "Column 3",
+                "Column 4",
+                "Column 5",
+                "Column 6",
+                "Column 7",
+                "Column 8",
+                "Column 9",
+                "Column 10"
+            ])
+
+            myroadmap.style(["#6a4bcc", "#04a2fa", "#e7327d", "#662b6b"])
+
+            myroadmap.milestones([
+                {
+                    title: "Rank 0 - col 1",
+                    description: "Discriptive text",
+                    belongsToColumn: 1,
+                    forwardConnect: [2, 1],
+                    rank: 0
+                },
+                {
+                    title: "Rank 1 - col 1",
+                    description: "Discriptive text",
+                    belongsToColumn: 1,
+                    forwardConnect: [2, 1],
+                    rank: 1
+                },
+                {
+                    title: "Rank 1 - col 2",
+                    description: "Discriptive text",
+                    belongsToColumn: 2,
+                    rank: 1
+                },
+                {
+                    title: "Rank 0 - col 2",
+                    description: "Discriptive text",
+                    belongsToColumn: 2,
+                    forwardConnect: [2, 1],
+                    rank: 0
+                },
+                {
+                    title: "Rank 1 - col 3",
+                    description: "Discriptive text",
+                    belongsToColumn: 3,
+                    forwardConnect: [2, 1],
+                    rank: 1
+                },
+                {
+                    title: "Rank 0 - col 3",
+                    description: "Discriptive text",
+                    belongsToColumn: 3,
+                    forwardConnect: [2, 1],
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 4",
+                    description: "Discriptive text",
+                    belongsToColumn: 4,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 5",
+                    description: "Discriptive text",
+                    belongsToColumn: 5,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 6",
+                    description: "Discriptive text",
+                    belongsToColumn: 6,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 7",
+                    description: "Discriptive text",
+                    belongsToColumn: 7,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 8",
+                    description: "Discriptive text",
+                    belongsToColumn: 8,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 9",
+                    description: "Discriptive text",
+                    belongsToColumn: 9,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 10",
+                    description: "Discriptive text",
+                    belongsToColumn: 10,
+                    rank: 0
+                }
+            ])
+        </script>
+    </body>
+</html>

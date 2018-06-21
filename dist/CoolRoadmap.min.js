@@ -5,7 +5,8 @@ function roadmap(wrapperDivID) {
         wrapperElement: document.getElementById(wrapperDivID),
         data: [],
         nodeWidth: 100,
-        nodeHeight: 100
+        nodeHeight: 100,
+        columnColors: []
     }
 
     function columns(columnNames) {
@@ -37,16 +38,29 @@ function roadmap(wrapperDivID) {
         _build();
     }
 
+    function style(columnColors) {
+        roadmap.columnColors = columnColors;
+
+        _build();
+    } 
+
     function _build() {
+        var columnCount = 0;
+
         // Empty the wrapper element
         roadmap.wrapperElement.innerHTML = '';
+
+        // Create our container
+        var container = document.createElement('div');
+        container.classList = roadmap.classNamePrefix + 'container';
 
         // Create our wrapper
         var wrapper = document.createElement('div');
         wrapper.classList = roadmap.classNamePrefix + 'wrapper';
 
         // build and add the columns and milestone nodes
-        roadmap.data.forEach(function (columnData) {
+        roadmap.data.forEach(function(columnData, idx) {
+            columnCount++;
             var columnElem = buildColumn(columnData);
 
             var milstoneRanks = Object.keys(columnData.milestones).sort().reverse();
@@ -54,7 +68,7 @@ function roadmap(wrapperDivID) {
             milstoneRanks.forEach(function(rank) {
                 columnData.milestones[rank].forEach(function(milestone) {
                     count++;
-                    columnElem.appendChild(buildMilestone(milestone, count));
+                    columnElem.appendChild(buildMilestone(milestone, count, idx));
                 })
             })
 
@@ -66,8 +80,15 @@ function roadmap(wrapperDivID) {
         clearfix.classList = roadmap.classNamePrefix + 'clearfix';
         wrapper.appendChild(clearfix);
 
+        if (columnCount <= 5) {
+            container.classList += ' center';
+        }
+
+        // Add the wrapper to the container
+        container.appendChild(wrapper);
+
         // Add the container to the parent
-        roadmap.wrapperElement.appendChild(wrapper);
+        roadmap.wrapperElement.appendChild(container);
 
 
 
@@ -79,12 +100,13 @@ function roadmap(wrapperDivID) {
             
             header.innerText = columnData.name;
             header.classList = roadmap.classNamePrefix + 'node ' + roadmap.classNamePrefix + 'header';
+
             column.appendChild(header);
 
             return column;
         }
 
-        function buildMilestone(milestone, milestoneIdx) {
+        function buildMilestone(milestone, milestoneIdx, columnIdx) {
             var milstoneElem = document.createElement('div');
 
             if (milestone.title) {
@@ -97,10 +119,20 @@ function roadmap(wrapperDivID) {
                 milstoneElem.classList += ' ' + roadmap.classNamePrefix + 'spacer'
             }
 
+            if (roadmap.columnColors[columnIdx]) {
+                milstoneElem.style.borderColor = roadmap.columnColors[columnIdx];
+            }
+
             if (milestone.forwardConnect) {
+                var startColor = '#2e3148';
+                var endColor = '#2e3148';
                 var arrowElem = document.createElement('div');
                 
                 arrowElem.classList = roadmap.classNamePrefix + 'arrow';
+
+                if (roadmap.columnColors[columnIdx]) {
+                    startColor = roadmap.columnColors[columnIdx];
+                }
 
                 var a = milestone.forwardConnect[1] - milestoneIdx;
                 var b = milestone.forwardConnect[0] - milestone.belongsToColumn;
@@ -111,26 +143,45 @@ function roadmap(wrapperDivID) {
                 
                 arrowElem.style.transform = "rotate(" + transformDegrees + "deg)";
                 // The width is the distance minus a nodes width
-                arrowElem.style.width = (distance) - 110 + 'px';
+                arrowElem.style.width = (distance) - 120 + 'px';
 
                 if (b < 0) {
                     // If the arrow is pointing towards a column to the left of the node
-                    arrowElem.style.left = '-5px';
-                    arrowElem.style.width = (distance) - 160 + 'px'; 
+                    arrowElem.style.left = '10px';
+                    
+                    if (roadmap.columnColors[columnIdx - 1]) {
+                        endColor = roadmap.columnColors[columnIdx - 1];
+                    }
+
+                    arrowElem.classList += ' ' + roadmap.classNamePrefix + 'noEnd';
                 } else if (b == 0) {
                     // If the arrow is pointing towards the same column of the node
                     arrowElem.style.left = '50%';
-                    arrowElem.style.width = '15px';
+                    arrowElem.style.width = '20px';
+                    endColor = startColor;
                 } else {
                     // If the arrow is pointing towards a column to the right of the node
-                    arrowElem.style.width = (distance) - 160 + 'px'; 
+                    if (roadmap.columnColors[columnIdx + 1]) {
+                        endColor = roadmap.columnColors[columnIdx + 1];
+                    }
+
+                    arrowElem.classList += ' ' + roadmap.classNamePrefix + 'noEnd';
                 }
 
                 if (a == 0) {
                     // If the arrow is pointing towards a node in the same rank
                     arrowElem.style.top = '50%'
-                    arrowElem.style.width = (distance) - 110 + 'px';
+                    arrowElem.style.width = (distance) - 96 + 'px';
+
+                    if (b > 0) {
+                        arrowElem.style.left = distance - 47 + 'px';
+                    } else if (b < 0) {
+                        arrowElem.style.left = '-3px';
+                    }
                 }
+
+                arrowElem.style.backgroundImage = 'linear-gradient(to right, ' + startColor + ', ' + endColor + ')';
+                pseudoStyle(arrowElem, 'before', 'border-color', endColor);
 
                 milstoneElem.appendChild(arrowElem);
             }
@@ -139,8 +190,22 @@ function roadmap(wrapperDivID) {
         }
     }
 
+    function pseudoStyle(hostElement, pseudoElement, prop, value){
+        var _sheetId = "pseudoStyles";
+        var _head = document.head || document.getElementsByTagName('head')[0];
+        var _sheet = document.getElementById(_sheetId) || document.createElement('style');
+        _sheet.id = _sheetId;
+        var className = "pseudoStyle" + Math.floor(Math.random() * (999999999 + 1));
+        
+        hostElement.className +=  " " + className; 
+        
+        _sheet.innerHTML += "." + roadmap.classNamePrefix + "container ." + className + ":" + pseudoElement + "{" + prop + ":" + value + "}";
+        _head.appendChild(_sheet);
+    };
+
     return {
         columns: columns,
-        milestones: milestones
+        milestones: milestones,
+        style: style
     };
 }

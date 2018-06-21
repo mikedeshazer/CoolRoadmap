@@ -19,6 +19,7 @@
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-csso": "^3.0.1",
+    "gulp-less": "^3.5.0",
     "gulp-sourcemaps": "^2.6.4"
   }
 }
