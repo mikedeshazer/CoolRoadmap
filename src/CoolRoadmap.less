@@ -1,0 +1,85 @@
+@classNamePrefix: coolRoadmap-;
+@nodeWidth: 100;
+@nodeHeight: 100;
+@spacerHeight: @nodeHeight+2;
+@columnSpacing: 60;
+
+.@{classNamePrefix}clearfix {
+    clear: both;
+}
+
+.@{classNamePrefix}container {
+    max-width: (@nodeWidth*4) + (@columnSpacing*5) + 0px;
+    overflow-x: auto;
+    margin: 0 auto;
+
+    &.center {
+        max-width: none;
+        width: 100%;
+        text-align: center;
+    }
+
+    .@{classNamePrefix}wrapper {
+        position: relative;
+        white-space: nowrap;
+
+        .@{classNamePrefix}column {
+            width: ~'@{nodeWidth}px';
+            display: inline-block;
+            margin-right: ~'@{columnSpacing}px';
+            vertical-align: top;
+
+            &:last-child {
+                margin-right: 0;
+            }
+
+            .@{classNamePrefix}node {
+                margin: 35px 0;
+                width: ~'@{nodeWidth}px';
+                height: ~'@{nodeHeight}px';
+                position: relative;
+                z-index: 1;
+                border: 1px solid #2e3148;
+
+                &.@{classNamePrefix}spacer {
+                    border: none;
+                    height: ~'@{spacerHeight}px';
+                }
+
+                &.@{classNamePrefix}header {
+                    border-color: #1b1e36;
+                }
+            }
+        }
+
+        .@{classNamePrefix}arrow {
+            position: absolute;
+            z-index: -1;
+            top: -6px;
+            left: 90px;
+            height: 3px;
+            background-color: black;
+            transform-origin: left;
+        
+            &:before{
+                right: -7px;
+                top: 2px;
+                position: absolute;
+                transform-origin: right top;
+                content: "";
+                box-sizing: border-box;
+                transform: rotate(45deg);
+                border-width: 5px;
+                border-style: solid;
+                border-bottom-color: transparent;
+                border-left-color: transparent;
+            }
+
+            &.@{classNamePrefix}noEnd {
+                &:before {
+                    display: none;
+                }
+            }
+        }
+    }
+}

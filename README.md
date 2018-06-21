@@ -54,7 +54,7 @@ myroadmap.columns([
 
 ### roadmap.milestones(milestones)
 
-Create the columns for the roadmap. The `milestones` argument if an object containing the data for the milestone. The object structure is defined as:
+Create the columns for the roadmap. The `milestones` argument is an object containing the data for the milestone. The object structure is defined as:
 
 ```javascript
 {
@@ -78,6 +78,14 @@ myroadmap.milestones([
         rank: 0
     }
 ])
+```
+
+### roadmap.style(columnColors)
+
+Define the colors for the nodes in each column. The `columnColors` argument is an array of strings containing the color (hex or rgb) for each defined column.
+
+```javascript
+myroadmap.columnColors(['#6a4bcc', '#04a2fa', '#e7327d', '#662b6b'])
 ```
 
 ## Features
