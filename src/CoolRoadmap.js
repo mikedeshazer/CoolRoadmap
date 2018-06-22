@@ -35,11 +35,7 @@ function roadmap(wrapperDivID) {
                 throw new Error('Milestone has invaid belongsToColumn');
             }
 
-            if (!roadmap.data[milestoneIdx].milestones[milestone.rank]) {
-                roadmap.data[milestoneIdx].milestones[milestone.rank] = [];
-            }
-
-            roadmap.data[milestoneIdx].milestones[milestone.rank].push(milestone);
+            roadmap.data[milestoneIdx].milestones[milestone.rank] = milestone;
 
             if (milestone.difficult) {
                 roadmap.data[milestoneIdx].totalDifficult += milestone.difficult;
@@ -55,17 +51,17 @@ function roadmap(wrapperDivID) {
 
             while (count <= milestoneRankMax) {
                 if (!column.milestones[count]) {
-                    roadmap.data[columnIdx].milestones[count] = [
-                        {
-                            spacer: true,
-                            belongsToColumn: columnIdx + 1,
-                            rank: count
-                        }
-                    ]
+                    roadmap.data[columnIdx].milestones[count] = {
+                        spacer: true,
+                        belongsToColumn: columnIdx + 1,
+                        rank: count
+                    }
                 }
 
                 count++;
             }
+
+            roadmap.data[columnIdx].milestoneVersions = versionThis(roadmap.data[columnIdx].milestones, '2 decimals', 1);
         })
 
         _build();
@@ -79,6 +75,15 @@ function roadmap(wrapperDivID) {
     
     function markComplete(milestoneCompleteData) {
         roadmap.milestoneCompleteData = milestoneCompleteData;
+
+        _build();
+    }
+
+    window.onresize = function() {
+        roadmap.nodeWidth = -1;
+        roadmap.nodeHeight = -1;
+        roadmap.columnSpacing = -1;
+        roadmap.nodeSpacing = -1;
 
         _build();
     }
@@ -103,52 +108,52 @@ function roadmap(wrapperDivID) {
             var columnElem = buildColumn(columnData, idx);
 
             var milstoneRanks = Object.keys(columnData.milestones).sort().reverse();
-            var count = 0;
             milstoneRanks.forEach(function(rank) {
-                columnData.milestones[rank].forEach(function(milestone) {
-                    count++;
+                var milestone = columnData.milestones[rank];
+                if (roadmap.nodeWidth === -1) {
+                    // Dynamically get the width, height, and spacing of a node in a column
+                    var fakeMilestoneElem = buildMilestone(milestone, idx);
+                    var fakeColumn = columnElem.cloneNode(true);
+                    fakeColumn.appendChild(fakeMilestoneElem);
 
-                    if (roadmap.nodeWidth === -1) {
-                        // Dynamically get the width, height, and spacing of a node in a column
-                        var fakeMilestoneElem = buildMilestone(milestone, count, idx);
-                        var fakeColumn = columnElem.cloneNode(true);
-                        fakeColumn.appendChild(fakeMilestoneElem);
-
+                    var count = 1;
+                    while (count <= roadmap.data.length) {
                         wrapper.appendChild(fakeColumn.cloneNode(true));
-                        wrapper.appendChild(fakeColumn.cloneNode(true));
-                        container.appendChild(wrapper);
-                        container.style.visibility = 'hidden';
-                        roadmap.wrapperElement.appendChild(container);
-
-                        var milestoneComputedStyle = getComputedStyle(
-                            document.getElementsByClassName(roadmap.classNamePrefix + 'milestone')[0]
-                        );
-                        var columnComputedStyle = getComputedStyle(
-                            document.getElementsByClassName(roadmap.classNamePrefix + 'column')[0]
-                        );
-
-                        roadmap.nodeWidth = parseInt(milestoneComputedStyle.getPropertyValue('width').replace('px', '')) + 4;
-                        roadmap.nodeHeight = parseInt(milestoneComputedStyle.getPropertyValue('height').replace('px', '')) + 4;
-                        roadmap.nodeSpacing = parseInt(milestoneComputedStyle.getPropertyValue('margin-bottom').replace('px', ''));
-                        roadmap.columnSpacing = parseInt(columnComputedStyle.getPropertyValue('margin-right').replace('px', ''));
-                        
-                        wrapper.innerHTML = '';
-                        container.innerHTML = '';
-                        container.style.visibility = 'visible';
-                        roadmap.wrapperElement.innerHTML = '';
+                        count++;
                     }
 
-                    var milestoneElem = buildMilestone(milestone, count, idx);
-                    columnElem.appendChild(milestoneElem);
-                })
+                    if (columnCount <= 5) {
+                        container.classList += ' center';
+                    }
+
+                    container.appendChild(wrapper);
+                    container.style.visibility = 'hidden';
+                    roadmap.wrapperElement.appendChild(container);
+
+                    var milestoneComputedStyle = getComputedStyle(
+                        document.getElementsByClassName(roadmap.classNamePrefix + 'milestone')[0]
+                    );
+                    var columnComputedStyle = getComputedStyle(
+                        document.getElementsByClassName(roadmap.classNamePrefix + 'column')[0]
+                    );
+
+                    roadmap.nodeWidth = document.getElementsByClassName('coolRoadmap-milestone')[0].offsetWidth + 4;
+                    roadmap.nodeHeight = parseInt(milestoneComputedStyle.getPropertyValue('height').replace('px', '')) + 4;
+                    roadmap.nodeSpacing = parseInt(milestoneComputedStyle.getPropertyValue('margin-bottom').replace('px', ''));
+                    roadmap.columnSpacing = parseInt(columnComputedStyle.getPropertyValue('padding-right').replace('px', ''));
+                    
+                    wrapper.innerHTML = '';
+                    container.innerHTML = '';
+                    container.style.visibility = 'visible';
+                    roadmap.wrapperElement.innerHTML = '';
+                }
+
+                var milestoneElem = buildMilestone(milestone, idx);
+                columnElem.appendChild(milestoneElem);
             })
 
             wrapper.appendChild(columnElem);
         })
-
-        if (columnCount <= 5) {
-            container.classList += ' center';
-        }
 
         // Add the wrapper to the container
         container.appendChild(wrapper);
@@ -164,13 +169,13 @@ function roadmap(wrapperDivID) {
                 var completedMilestones = [];
 
                 roadmap.milestoneCompleteData[columnIdx].forEach(function(milestoneNum) {
-                    totalComplete += columnData.milestones[milestoneNum][0].difficult || 0;
+                    totalComplete += columnData.milestones[milestoneNum].difficult || 0;
                     completedMilestones.push(milestoneNum);
                 });
 
-                columnData.milestones.forEach(function(milestones, idx) {
-                    if (milestones[0].status === 'complete' && completedMilestones.indexOf(idx) === -1) {
-                        totalComplete += milestones[0].difficult || 0;
+                columnData.milestones.forEach(function(milestone, idx) {
+                    if (milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
+                        totalComplete += milestone.difficult || 0;
                     }
                 })
 
@@ -208,11 +213,19 @@ function roadmap(wrapperDivID) {
             return column;
         }
 
-        function buildMilestone(milestone, milestoneIdx, columnIdx) {
+        function buildMilestone(milestone, columnIdx) {
             var milstoneElem = document.createElement('div');
 
             if (milestone.title) {
-                milstoneElem.innerText = milestone.title;
+                var title = document.createElement('div');
+                var version = document.createElement('div');
+                
+                title.innerText = milestone.title;
+                title.classList += roadmap.classNamePrefix + 'title';
+                version.innerText = roadmap.data[columnIdx].milestoneVersions[milestone.rank];
+
+                milstoneElem.appendChild(title);
+                milstoneElem.appendChild(version);
             }
 
             milstoneElem.classList = roadmap.classNamePrefix + 'node ' + roadmap.classNamePrefix + 'milestone';
@@ -221,8 +234,9 @@ function roadmap(wrapperDivID) {
                 milstoneElem.classList += ' ' + roadmap.classNamePrefix + 'spacer'
             }
 
-            if (roadmap.columnColors[columnIdx]) {
+            if (roadmap.columnColors[columnIdx]  && milestone.status !== 'pending') {
                 milstoneElem.style.borderColor = roadmap.columnColors[columnIdx];
+                pseudoStyle(milstoneElem, 'after', 'background', roadmap.columnColors[columnIdx]);
             }
 
             if (milestone.forwardConnect) {
@@ -241,11 +255,11 @@ function roadmap(wrapperDivID) {
 
                 var paddingAndArrow = 12 + (2 * Math.abs(heightDiffIdx));
 
-                if (roadmap.columnColors[columnIdx]) {
+                if (roadmap.columnColors[columnIdx] && milestone.status !== 'pending') {
                     startColor = roadmap.columnColors[columnIdx];
                 }
 
-                if (roadmap.columnColors[columnIdx + widthDiffIdx]) {
+                if (roadmap.columnColors[columnIdx + widthDiffIdx] && milestone.status !== 'pending') {
                     endColor = roadmap.columnColors[columnIdx + widthDiffIdx];
                 }
 
@@ -312,6 +326,60 @@ function roadmap(wrapperDivID) {
         }
     }
 
+    function getMilestone(column, rank) {
+        return roadmap.data[column].milestones[rank];
+    }
+
+    function versionThis(milestoneObjs, format, startingPoint) {
+        if (typeof format != "string") {
+            format = "2 decimals";
+        }
+
+        if (typeof startingPoint != "number") {
+            startingPoint = "1";
+        }
+
+        startingPoint = startingPoint.toString();
+    
+        //all the milestone objects for a category are sent here, first to last
+        var difficulty= 0;
+        var responseSkeleton = ['0.10.0', '0.25.0', '0.40.0', '0.80.0', '0.90.0', '1.0.0'];
+
+        for (i in milestoneObjs) {
+            difficulty = difficulty + milestoneObjs[i]['difficulty'];
+        }
+    
+        var lastGeneratedMilestoneNum = 0;
+        var loopCount = 0;
+        responseSkeleton=[];
+
+        for (j in milestoneObjs) {
+            var thisWeight = milestoneObjs[j]['difficulty'] / difficulty;
+            thisMilestoneVersion = lastGeneratedMilestoneNum + thisWeight;
+            lastGeneratedMilestoneNum = thisMilestoneVersion;
+    
+            if(format == "2 decimals"){
+                if(loopCount >= milestoneObjs.length - 1){
+                    var endingPoint = parseInt(startingPoint) + 1;
+                    responseSkeleton.push(endingPoint.toString() + ".0.0");
+                } else {
+                    responseSkeleton.push(startingPoint.toString() + "" + lastGeneratedMilestoneNum.toFixed(2).toString().replace("0.", ".") + ".0"); 
+                }
+            } else {
+                if (loopCount >= milestoneObjs.length-1) {
+                    var endingPoint = parseInt(startingPoint) + 1;
+                    responseSkeleton.push(endingPoint + ".0");
+                } else{
+                    responseSkeleton.push(startingPoint + "." + lastGeneratedMilestoneNum.toFixed(2).toString().replace("0.", ".")); 
+                }
+            }
+
+            loopCount = loopCount + 1;
+        }
+    
+        return responseSkeleton;
+    }
+
     function pseudoStyle(hostElement, pseudoElement, prop, value){
         var _sheetId = "pseudoStyles";
         var _head = document.head || document.getElementsByTagName('head')[0];
@@ -321,7 +389,7 @@ function roadmap(wrapperDivID) {
         
         hostElement.className +=  " " + className; 
         
-        _sheet.innerHTML += "." + roadmap.classNamePrefix + "container ." + className + ":" + pseudoElement + "{" + prop + ":" + value + "}";
+        _sheet.innerHTML += "." + roadmap.classNamePrefix + "container ." + className + ":" + pseudoElement + "{" + prop + ":" + value + " !important}";
         _head.appendChild(_sheet);
     };
 
