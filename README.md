@@ -63,9 +63,11 @@ Create the columns for the roadmap. The `milestones` argument is an object conta
     belongsToColumn: // The column number that the milestone belongs to (starts at 1)
     forwardConnect: [
         // The column of the node this node connects to,
-        // The node index (starts at 1) of the node this node connects to
+        // The milestone rank of the node this node connects to
     ]
     rank: // The order in which this node should appear in the column (0 is the bottom and lowest rank)
+    difficult: // The amount of which this milestone contributes to the percent complete
+    status: // If defined as "complete" this milestone is marked as complete
 }
 ```
 
@@ -75,7 +77,8 @@ myroadmap.milestones([
         title: 'Rank 0 - col 1',
         description: 'Discriptive text',
         belongsToColumn: 1,
-        rank: 0
+        rank: 0,
+        difficult: 10
     }
 ])
 ```
@@ -87,6 +90,18 @@ Define the colors for the nodes in each column. The `columnColors` argument is a
 ```javascript
 myroadmap.columnColors(['#6a4bcc', '#04a2fa', '#e7327d', '#662b6b'])
 ```
+
+### roadmap.markComplete(milestonesComplete)
+
+Define which milestones are complete to drive the percent complete of the column. The `milestonesComplete` argument is an array of arrays of integers of which are the ranks that are complete for each column.
+
+```javascript
+myroadmap.columnColors([
+    [0, 3], // Column 1 - Rank 0 and 3
+    [2] // Column 2 - Rank 2
+])
+```
+
 
 ## Features
 
