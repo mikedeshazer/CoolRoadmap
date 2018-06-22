@@ -1,12 +1,10 @@
 @classNamePrefix: coolRoadmap-;
-@nodeWidth: 100;
-@nodeHeight: 100;
+@nodeWidth: 200;
+@nodeHeight: 50;
 @spacerHeight: @nodeHeight+2;
 @columnSpacing: 60;
-
-.@{classNamePrefix}clearfix {
-    clear: both;
-}
+@progressContentSize: 12;
+@progrssContentPadding: 4;
 
 .@{classNamePrefix}container {
     max-width: (@nodeWidth*4) + (@columnSpacing*5) + 0px;
@@ -34,12 +32,16 @@
             }
 
             .@{classNamePrefix}node {
-                margin: 35px 0;
+                margin: 40px 0;
                 width: ~'@{nodeWidth}px';
                 height: ~'@{nodeHeight}px';
                 position: relative;
                 z-index: 1;
-                border: 1px solid #2e3148;
+                border: 2px solid #2e3148;
+                text-align: center;
+                vertical-align: middle;
+                line-height: ~'@{nodeHeight}px';
+                border-radius: 5px;
 
                 &.@{classNamePrefix}spacer {
                     border: none;
@@ -48,6 +50,33 @@
 
                 &.@{classNamePrefix}header {
                     border-color: #1b1e36;
+                    height: 80px;
+                    position: relative;
+                    line-height: 80 - (@progressContentSize + (@progrssContentPadding * 4)) + 0px;
+                    border-radius: 0;
+
+                    .@{classNamePrefix}progress {
+                        width: 100%;
+                        background-color: #2e3148;
+                        position: absolute;
+                        bottom: 0;
+
+                        .@{classNamePrefix}progressBar {
+                            top: 0;
+                            position: absolute;
+                            height: 100%;
+                            background-color: #242638;
+                        }
+
+                        .@{classNamePrefix}progressContent {
+                            position: relative;
+                            z-index: 2;
+                            font-size: ~'@{progressContentSize}px';
+                            line-height: ~'@{progressContentSize}px';
+                            font-weight: bold;
+                            padding: ~'@{progrssContentPadding}px 0';
+                        }
+                    }
                 }
             }
         }
@@ -55,8 +84,9 @@
         .@{classNamePrefix}arrow {
             position: absolute;
             z-index: -1;
-            top: -6px;
-            left: 90px;
+            top: -7px;
+            z-index: -1;
+            left: (@nodeWidth+4) + 0px;
             height: 3px;
             background-color: black;
             transform-origin: left;

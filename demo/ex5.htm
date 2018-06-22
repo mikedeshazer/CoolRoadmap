@@ -2,6 +2,13 @@
     <head>
         <title>Cool Roadmap Demo</title>
         <link rel="stylesheet" href="../dist/CoolRoadmap.min.css">
+        <style>
+            body {
+                background-color: #15182d;
+                color: #FFF;
+                font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+            }
+        </style>
     </head>
     <body>
         <h1>Cool Roadmap Demo - 10 Column</h1>
@@ -13,16 +20,16 @@
             var myroadmap = new roadmap('CoolRoadmapWrapper');
 
             myroadmap.columns([
-                "Column 1",
-                "Column 2",
-                "Column 3",
-                "Column 4",
-                "Column 5",
-                "Column 6",
-                "Column 7",
-                "Column 8",
-                "Column 9",
-                "Column 10"
+                "Component 1",
+                "Component 2",
+                "Component 3",
+                "Component 4",
+                "Component 5",
+                "Component 6",
+                "Component 7",
+                "Component 8",
+                "Component 9",
+                "Component 10"
             ])
 
             myroadmap.style(["#6a4bcc", "#04a2fa", "#e7327d", "#662b6b"])
@@ -32,85 +39,99 @@
                     title: "Rank 0 - col 1",
                     description: "Discriptive text",
                     belongsToColumn: 1,
-                    forwardConnect: [2, 1],
+                    forwardConnect: [1, 2],
+                    difficult: 10,
                     rank: 0
                 },
                 {
-                    title: "Rank 1 - col 1",
+                    title: "Rank 2 - col 1",
                     description: "Discriptive text",
                     belongsToColumn: 1,
-                    forwardConnect: [2, 1],
-                    rank: 1
+                    difficult: 40,
+                    status: "complete",
+                    rank: 2
                 },
                 {
-                    title: "Rank 1 - col 2",
+                    title: "Rank 3 - col 1",
                     description: "Discriptive text",
-                    belongsToColumn: 2,
-                    rank: 1
+                    belongsToColumn: 1,
+                    difficult: 40,
+                    rank: 3
+                },
+                {
+                    title: "Rank 4 - col 1",
+                    description: "Discriptive text",
+                    belongsToColumn: 1,
+                    rank: 4
                 },
                 {
                     title: "Rank 0 - col 2",
                     description: "Discriptive text",
                     belongsToColumn: 2,
-                    forwardConnect: [2, 1],
+                    forwardConnect: [1, 2],
+                    difficult: 10,
                     rank: 0
                 },
                 {
-                    title: "Rank 1 - col 3",
+                    title: "Rank 1 - col 2",
                     description: "Discriptive text",
-                    belongsToColumn: 3,
-                    forwardConnect: [2, 1],
+                    belongsToColumn: 2,
+                    forwardConnect: [1, 2],
                     rank: 1
+                },
+                {
+                    title: "Rank 4 - col 2",
+                    description: "Discriptive text",
+                    belongsToColumn: 2,
+                    difficult: 60,
+                    rank: 4
                 },
                 {
                     title: "Rank 0 - col 3",
                     description: "Discriptive text",
                     belongsToColumn: 3,
-                    forwardConnect: [2, 1],
+                    forwardConnect: [3, 4],
                     rank: 0
+                },
+                {
+                    title: "Rank 4 - col 3",
+                    description: "Discriptive text",
+                    belongsToColumn: 3,
+                    difficult: 50,
+                    rank: 4
                 },
                 {
                     title: "Rank 0 - col 4",
                     description: "Discriptive text",
                     belongsToColumn: 4,
+                    forwardConnect: [4, 2],
                     rank: 0
                 },
                 {
-                    title: "Rank 0 - col 5",
+                    title: "Rank 2 - col 4",
                     description: "Discriptive text",
-                    belongsToColumn: 5,
-                    rank: 0
+                    belongsToColumn: 4,
+                    forwardConnect: [2, 4],
+                    rank: 2
                 },
                 {
-                    title: "Rank 0 - col 6",
+                    title: "Rank 3 - col 4",
                     description: "Discriptive text",
-                    belongsToColumn: 6,
-                    rank: 0
+                    belongsToColumn: 4,
+                    difficult: 40,
+                    rank: 3
                 },
                 {
-                    title: "Rank 0 - col 7",
+                    title: "Rank 4 - col 4",
                     description: "Discriptive text",
-                    belongsToColumn: 7,
-                    rank: 0
-                },
-                {
-                    title: "Rank 0 - col 8",
-                    description: "Discriptive text",
-                    belongsToColumn: 8,
-                    rank: 0
-                },
-                {
-                    title: "Rank 0 - col 9",
-                    description: "Discriptive text",
-                    belongsToColumn: 9,
-                    rank: 0
-                },
-                {
-                    title: "Rank 0 - col 10",
-                    description: "Discriptive text",
-                    belongsToColumn: 10,
-                    rank: 0
+                    belongsToColumn: 4,
+                    difficult: 30,
+                    rank: 4
                 }
+            ])
+
+            myroadmap.markComplete([
+                [0], [4], [4], [3]
             ])
         </script>
     </body>

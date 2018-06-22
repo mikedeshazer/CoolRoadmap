@@ -11,7 +11,7 @@
         </style>
     </head>
     <body>
-        <h1>Cool Roadmap Demo - 1 Column</h1>
+        <h1>Cool Roadmap Demo - 4 Column</h1>
 
         <div id='CoolRoadmapWrapper'></div>
 
@@ -20,7 +20,10 @@
             var myroadmap = new roadmap('CoolRoadmapWrapper');
 
             myroadmap.columns([
-                "C Hub"
+                "Component 1",
+                "Component 2",
+                "Component 3",
+                "Component 4"
             ])
 
             myroadmap.milestones([
@@ -35,7 +38,26 @@
                     title: "Rank 1 - col 1",
                     description: "Discriptive text",
                     belongsToColumn: 1,
+                    forwardConnect: [2, 0],
                     rank: 1
+                },
+                {
+                    title: "Rank 0 - col 2",
+                    description: "Discriptive text",
+                    belongsToColumn: 2,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 3",
+                    description: "Discriptive text",
+                    belongsToColumn: 3,
+                    rank: 0
+                },
+                {
+                    title: "Rank 0 - col 4",
+                    description: "Discriptive text",
+                    belongsToColumn: 4,
+                    rank: 0
                 }
             ])
         </script>

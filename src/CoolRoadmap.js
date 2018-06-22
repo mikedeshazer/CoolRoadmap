@@ -4,16 +4,21 @@ function roadmap(wrapperDivID) {
         wrapperDivID: wrapperDivID,
         wrapperElement: document.getElementById(wrapperDivID),
         data: [],
-        nodeWidth: 100,
-        nodeHeight: 100,
-        columnColors: []
+        nodeWidth: -1,
+        nodeHeight: -1,
+        columnSpacing: -1,
+        nodeSpacing: -1,
+        columnColors: [],
+        milestoneCompleteData: []
     }
 
     function columns(columnNames) {
-        columnNames.forEach(function (columnName) {
+        columnNames.forEach(function(columnName) {
             roadmap.data.push({
                 name: columnName,
-                milestones: {}
+                progressComplete: 0,
+                totalDifficult: 0,
+                milestones: []
             })
         })
 
@@ -21,7 +26,9 @@ function roadmap(wrapperDivID) {
     } 
 
     function milestones(milestones) {
-        milestones.forEach(function (milestone) {
+        var milestoneRankMax = 0;
+
+        milestones.forEach(function(milestone) {
             var milestoneIdx = milestone.belongsToColumn - 1;
 
             if (!roadmap.data[milestoneIdx]) {
@@ -33,6 +40,32 @@ function roadmap(wrapperDivID) {
             }
 
             roadmap.data[milestoneIdx].milestones[milestone.rank].push(milestone);
+
+            if (milestone.difficult) {
+                roadmap.data[milestoneIdx].totalDifficult += milestone.difficult;
+            }
+
+            if (milestone.rank > milestoneRankMax) {
+                milestoneRankMax = milestone.rank;
+            }
+        })
+
+        roadmap.data.forEach(function(column, columnIdx) {
+            var count = 0;
+
+            while (count <= milestoneRankMax) {
+                if (!column.milestones[count]) {
+                    roadmap.data[columnIdx].milestones[count] = [
+                        {
+                            spacer: true,
+                            belongsToColumn: columnIdx + 1,
+                            rank: count
+                        }
+                    ]
+                }
+
+                count++;
+            }
         })
 
         _build();
@@ -42,7 +75,13 @@ function roadmap(wrapperDivID) {
         roadmap.columnColors = columnColors;
 
         _build();
-    } 
+    }
+    
+    function markComplete(milestoneCompleteData) {
+        roadmap.milestoneCompleteData = milestoneCompleteData;
+
+        _build();
+    }
 
     function _build() {
         var columnCount = 0;
@@ -61,24 +100,51 @@ function roadmap(wrapperDivID) {
         // build and add the columns and milestone nodes
         roadmap.data.forEach(function(columnData, idx) {
             columnCount++;
-            var columnElem = buildColumn(columnData);
+            var columnElem = buildColumn(columnData, idx);
 
             var milstoneRanks = Object.keys(columnData.milestones).sort().reverse();
             var count = 0;
             milstoneRanks.forEach(function(rank) {
                 columnData.milestones[rank].forEach(function(milestone) {
                     count++;
-                    columnElem.appendChild(buildMilestone(milestone, count, idx));
+
+                    if (roadmap.nodeWidth === -1) {
+                        // Dynamically get the width, height, and spacing of a node in a column
+                        var fakeMilestoneElem = buildMilestone(milestone, count, idx);
+                        var fakeColumn = columnElem.cloneNode(true);
+                        fakeColumn.appendChild(fakeMilestoneElem);
+
+                        wrapper.appendChild(fakeColumn.cloneNode(true));
+                        wrapper.appendChild(fakeColumn.cloneNode(true));
+                        container.appendChild(wrapper);
+                        container.style.visibility = 'hidden';
+                        roadmap.wrapperElement.appendChild(container);
+
+                        var milestoneComputedStyle = getComputedStyle(
+                            document.getElementsByClassName(roadmap.classNamePrefix + 'milestone')[0]
+                        );
+                        var columnComputedStyle = getComputedStyle(
+                            document.getElementsByClassName(roadmap.classNamePrefix + 'column')[0]
+                        );
+
+                        roadmap.nodeWidth = parseInt(milestoneComputedStyle.getPropertyValue('width').replace('px', '')) + 4;
+                        roadmap.nodeHeight = parseInt(milestoneComputedStyle.getPropertyValue('height').replace('px', '')) + 4;
+                        roadmap.nodeSpacing = parseInt(milestoneComputedStyle.getPropertyValue('margin-bottom').replace('px', ''));
+                        roadmap.columnSpacing = parseInt(columnComputedStyle.getPropertyValue('margin-right').replace('px', ''));
+                        
+                        wrapper.innerHTML = '';
+                        container.innerHTML = '';
+                        container.style.visibility = 'visible';
+                        roadmap.wrapperElement.innerHTML = '';
+                    }
+
+                    var milestoneElem = buildMilestone(milestone, count, idx);
+                    columnElem.appendChild(milestoneElem);
                 })
             })
 
             wrapper.appendChild(columnElem);
         })
-
-        // clearfix after the columns
-        var clearfix = document.createElement('div');
-        clearfix.classList = roadmap.classNamePrefix + 'clearfix';
-        wrapper.appendChild(clearfix);
 
         if (columnCount <= 5) {
             container.classList += ' center';
@@ -92,13 +158,49 @@ function roadmap(wrapperDivID) {
 
 
 
-        function buildColumn(columnData) {
+        function buildColumn(columnData, columnIdx) {
+            if (roadmap.milestoneCompleteData[columnIdx]) {
+                var totalComplete = 0;
+                var completedMilestones = [];
+
+                roadmap.milestoneCompleteData[columnIdx].forEach(function(milestoneNum) {
+                    totalComplete += columnData.milestones[milestoneNum][0].difficult || 0;
+                    completedMilestones.push(milestoneNum);
+                });
+
+                columnData.milestones.forEach(function(milestones, idx) {
+                    if (milestones[0].status === 'complete' && completedMilestones.indexOf(idx) === -1) {
+                        totalComplete += milestones[0].difficult || 0;
+                    }
+                })
+
+                columnData.progressComplete = ((totalComplete / columnData.totalDifficult) * 100).toFixed(0);
+            }
+
             var column = document.createElement('div');
             column.classList = roadmap.classNamePrefix + 'column';
 
             var header = document.createElement('div');
+            var headerProgressBar = document.createElement('div');
+            var headerProgressBarInner = document.createElement('div');
+            var headerProgressBarContent = document.createElement('div');
+
+            headerProgressBarInner.style.width = columnData.progressComplete + '%';
+            headerProgressBarInner.classList = roadmap.classNamePrefix + 'progressBar';
+            if (roadmap.columnColors[columnIdx]) {
+                headerProgressBarInner.style.backgroundColor = roadmap.columnColors[columnIdx];
+            }
+
+            headerProgressBar.classList = roadmap.classNamePrefix + 'progress';
+
+            headerProgressBarContent.innerText = columnData.progressComplete + '% Complete';
+            headerProgressBarContent.classList = roadmap.classNamePrefix + 'progressContent';
+
+            headerProgressBar.appendChild(headerProgressBarInner);
+            headerProgressBar.appendChild(headerProgressBarContent);
             
             header.innerText = columnData.name;
+            header.appendChild(headerProgressBar);
             header.classList = roadmap.classNamePrefix + 'node ' + roadmap.classNamePrefix + 'header';
 
             column.appendChild(header);
@@ -130,56 +232,76 @@ function roadmap(wrapperDivID) {
                 
                 arrowElem.classList = roadmap.classNamePrefix + 'arrow';
 
+                var heightDiffIdx = milestone.rank - milestone.forwardConnect[1];
+                var widthDiffIdx = milestone.forwardConnect[0] - milestone.belongsToColumn;
+
+                var heightDiff = heightDiffIdx * (roadmap.nodeHeight + roadmap.nodeSpacing);
+                var widthDiff = widthDiffIdx * (roadmap.nodeWidth + roadmap.columnSpacing);
+                var isNoEnd = true;
+
+                var paddingAndArrow = 12 + (2 * Math.abs(heightDiffIdx));
+
                 if (roadmap.columnColors[columnIdx]) {
                     startColor = roadmap.columnColors[columnIdx];
                 }
 
-                var a = milestone.forwardConnect[1] - milestoneIdx;
-                var b = milestone.forwardConnect[0] - milestone.belongsToColumn;
-                // Determine the degrees that the other node is from this node
-                var transformDegrees = Math.atan2(a, b) * 180 / Math.PI;
-                // Determine the distance from the other node
-                var distance = Math.sqrt((Math.pow(a * 150, 2)) + (Math.pow(b * 150, 2)))
-                
-                arrowElem.style.transform = "rotate(" + transformDegrees + "deg)";
-                // The width is the distance minus a nodes width
-                arrowElem.style.width = (distance) - 120 + 'px';
+                if (roadmap.columnColors[columnIdx + widthDiffIdx]) {
+                    endColor = roadmap.columnColors[columnIdx + widthDiffIdx];
+                }
 
-                if (b < 0) {
-                    // If the arrow is pointing towards a column to the left of the node
-                    arrowElem.style.left = '10px';
-                    
-                    if (roadmap.columnColors[columnIdx - 1]) {
-                        endColor = roadmap.columnColors[columnIdx - 1];
-                    }
-
-                    arrowElem.classList += ' ' + roadmap.classNamePrefix + 'noEnd';
-                } else if (b == 0) {
-                    // If the arrow is pointing towards the same column of the node
+                if (widthDiffIdx === 0 && heightDiffIdx < 0) {
+                    // Arrow is pointing N
                     arrowElem.style.left = '50%';
-                    arrowElem.style.width = '20px';
-                    endColor = startColor;
-                } else {
-                    // If the arrow is pointing towards a column to the right of the node
-                    if (roadmap.columnColors[columnIdx + 1]) {
-                        endColor = roadmap.columnColors[columnIdx + 1];
-                    }
+                    heightDiff += roadmap.nodeHeight + paddingAndArrow;
+                    isNoEnd = false;
+                } else if (widthDiffIdx > 0 && heightDiffIdx < 0) {
+                    // Arrow is poining NE
+                    widthDiff -= ((roadmap.nodeWidth / 4) * 3);
+                    heightDiff += roadmap.nodeHeight + (2 * Math.abs(heightDiffIdx));
+                } else if (widthDiffIdx > 0 && heightDiffIdx === 0) {
+                    // Arrow is pointing E
+                    arrowElem.style.top = '50%'
+                    widthDiff -= roadmap.nodeWidth + (14 * Math.abs(widthDiffIdx));
+                } else if (widthDiffIdx > 0 && heightDiffIdx > 0) {
+                    // Arrow is pointing SE
+                    arrowElem.style.top = '100%'
+                    widthDiff -= ((roadmap.nodeWidth / 4) * 3);
+                    heightDiff -= roadmap.nodeHeight + (2 * Math.abs(heightDiffIdx));
+                } else if (widthDiffIdx === 0 && heightDiffIdx > 0) {
+                    // Arrow is pointing S
+                    arrowElem.style.left = '50%';
+                    arrowElem.style.top = roadmap.nodeHeight + 5;
+                    heightDiff -= roadmap.nodeHeight + paddingAndArrow;
+                    isNoEnd = false;
+                } else if (widthDiffIdx < 0 && heightDiffIdx > 0) {
+                    // Arrow is pointing SW
+                    arrowElem.style.left = '-3px';
+                    arrowElem.style.top = '100%'
+                    widthDiff += ((roadmap.nodeWidth / 4) * 3);
+                    heightDiff -= roadmap.nodeHeight + (2 * Math.abs(heightDiffIdx));
+                } else if (widthDiffIdx < 0 && heightDiffIdx === 0) {
+                    // Arrow is pointing W
+                    arrowElem.style.left = '-3px';
+                    arrowElem.style.top = '50%'
+                    widthDiff += roadmap.nodeWidth + (8 * Math.abs(heightDiffIdx));
+                } else if (widthDiffIdx < 0 && heightDiffIdx < 0) {
+                    // Arrow is pointing NW
+                    arrowElem.style.left = '25%';
+                    widthDiff += ((roadmap.nodeWidth / 4) * 2);
+                    heightDiff += roadmap.nodeHeight + 10;
+                }
 
+                // Determine the degrees that the other node is from this node
+                var transformDegrees = Math.atan2(heightDiff, widthDiff) * 180 / Math.PI;
+                // Determine the distance from the other node
+                var distance = Math.hypot(heightDiff, widthDiff);
+                
+                if (isNoEnd) {                    
                     arrowElem.classList += ' ' + roadmap.classNamePrefix + 'noEnd';
                 }
 
-                if (a == 0) {
-                    // If the arrow is pointing towards a node in the same rank
-                    arrowElem.style.top = '50%'
-                    arrowElem.style.width = (distance) - 96 + 'px';
-
-                    if (b > 0) {
-                        arrowElem.style.left = distance - 47 + 'px';
-                    } else if (b < 0) {
-                        arrowElem.style.left = '-3px';
-                    }
-                }
-
+                arrowElem.style.transform = "rotate(" + transformDegrees + "deg)";
+                arrowElem.style.width = distance;
                 arrowElem.style.backgroundImage = 'linear-gradient(to right, ' + startColor + ', ' + endColor + ')';
                 pseudoStyle(arrowElem, 'before', 'border-color', endColor);
 
@@ -206,6 +328,7 @@ function roadmap(wrapperDivID) {
     return {
         columns: columns,
         milestones: milestones,
-        style: style
+        style: style,
+        markComplete: markComplete
     };
 }
