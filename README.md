@@ -1,5 +1,12 @@
 # CoolRoadmap
-> [Project Description]
+
+![4 Column With Progress Bar](_images/4colWithBarExample.png?raw=true "4 Column With Progress Bar")
+
+[1 Column Example](https://htmlpreview.github.io/?https://github.com/mikedeshazer/CoolRoadmap/blob/master/demo/ex1.htm) &bull; 
+[2 Column Example](https://htmlpreview.github.io/?https://github.com/mikedeshazer/CoolRoadmap/blob/master/demo/ex2.htm) &bull; 
+[3 Column Example](https://htmlpreview.github.io/?https://github.com/mikedeshazer/CoolRoadmap/blob/master/demo/ex3.htm) &bull; 
+[4 Column Example](https://htmlpreview.github.io/?https://github.com/mikedeshazer/CoolRoadmap/blob/master/demo/ex4.htm) &bull; 
+[10 Column Example](https://htmlpreview.github.io/?https://github.com/mikedeshazer/CoolRoadmap/blob/master/demo/ex5.htm)
 
 ## Getting started
 
@@ -108,7 +115,4 @@ myroadmap.columnColors([
 * Create a nice roadmap to show for yourn projects
 * Connect roadmap items across columns
 * Simple to style each node
-
-## Licensing
-
-[NEED LICENSE]
+* Overall progress bar
