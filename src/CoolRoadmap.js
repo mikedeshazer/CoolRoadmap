@@ -29,7 +29,15 @@ function roadmap(wrapperDivID) {
     function milestones(milestones) {
         var milestoneRankMax = 0;
 
+        roadmap.data.forEach(function(column, idx) {
+            roadmap.data[idx].milestones = [];
+        })
+
         milestones.forEach(function(milestone, idx) {
+            if (!milestone.belongsToColumn) {
+                milestone.belongsToColumn = 1;
+            }
+            
             var milestoneIdx = milestone.belongsToColumn - 1;
 
             if (!roadmap.data[milestoneIdx]) {
