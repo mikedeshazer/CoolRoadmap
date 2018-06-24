@@ -37,7 +37,7 @@ function roadmap(wrapperDivID) {
             if (!milestone.belongsToColumn) {
                 milestone.belongsToColumn = 1;
             }
-            
+
             var milestoneIdx = milestone.belongsToColumn - 1;
 
             if (!roadmap.data[milestoneIdx]) {
@@ -256,10 +256,10 @@ function roadmap(wrapperDivID) {
 
 
         function buildColumn(columnData, columnIdx) {
-            if (roadmap.milestoneCompleteData[columnIdx]) {
-                var totalComplete = 0;
-                var completedMilestones = [];
+            var totalComplete = 0;
+            var completedMilestones = [];
 
+            if (roadmap.milestoneCompleteData[columnIdx]) {
                 roadmap.milestoneCompleteData[columnIdx].sort().forEach(function(milestoneNum) {
                     if (getNextBelowMilestone(columnIdx, milestoneNum).status !== 'pending') {
                         roadmap.data[columnIdx].milestones[milestoneNum].status = 'complete';
@@ -267,15 +267,16 @@ function roadmap(wrapperDivID) {
                         completedMilestones.push(milestoneNum);
                     }
                 });
-
-                columnData.milestones.forEach(function(milestone, idx) {
-                    if (milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
-                        totalComplete += milestone.difficulty || roadmap.defaultMilestoneDifficulty;
-                    }
-                })
-                
-                roadmap.data[columnIdx].progressComplete = ((totalComplete / columnData.totalDifficulty) * 100).toFixed(0);
             }
+
+            columnData.milestones.forEach(function(milestone, idx) {
+                if (milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
+                    totalComplete += milestone.difficulty || roadmap.defaultMilestoneDifficulty;
+                    completedMilestones.push(idx);
+                }
+            })
+            
+            roadmap.data[columnIdx].progressComplete = ((totalComplete / columnData.totalDifficulty) * 100).toFixed(0);
 
             var column = document.createElement('div');
             column.classList = roadmap.classNamePrefix + 'column';
