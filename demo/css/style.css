@@ -1,0 +1,60 @@
+ body {
+                
+                color: #FFF;
+                font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+            }
+
+
+.compBox{
+    position:fixed;
+    padding:15px;
+    overflow:scroll;
+
+}
+
+#categoriesBox{
+    width:50%;
+    height:30%;
+    left:0px;
+    top:0px;
+    background-color:#000;
+}
+
+#milestonesBox{
+    width:50%;
+    height:30%;
+    right:0px;
+    top:0px;
+    background-color:#000;
+}
+
+
+#renderingBox{
+    background-color: #15182d;
+    overflow:scroll;
+    width:70%;
+    height:70%;
+    left:0px;
+    bottom:0px;
+   // background-color:#000;
+}
+
+#sourceBox{
+    width:30%;
+    height:70%;
+    right:0px;
+    bottom:0px;
+    background-color:#000;
+}
+
+
+
+textarea{
+    min-height:40%;
+    width:90%;
+    left:5%;
+    position:relative;
+    background-color:#2F323B;
+    color:#fff;
+    font-size:10px;
+}

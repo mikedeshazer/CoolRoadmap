@@ -10,11 +10,36 @@ function roadmap(wrapperDivID) {
         nodeSpacing: -1,
         columnColors: [],
         defaultMilestoneDifficulty: 10,
-        milestoneCompleteData: []
+        milestoneCompleteData: [],
+        userData: {
+            columnNames: [],
+            milestones: []
+        }
+    }
+
+    function _processUserData() {
+        roadmap.data = [];
+
+        _processColumns();
+        _processMilestones();
     }
 
     function columns(columnNames) {
-        columnNames.forEach(function(columnName) {
+        roadmap.userData.columnNames = columnNames;
+        
+        _processUserData();
+        _build();
+    } 
+
+    function milestones(milestones) {
+        roadmap.userData.milestones = milestones;
+        
+        _processUserData();
+        _build();
+    }
+
+    function _processColumns() {
+        roadmap.userData.columnNames.forEach(function(columnName) {
             roadmap.data.push({
                 name: columnName,
                 progressComplete: 0,
@@ -22,11 +47,10 @@ function roadmap(wrapperDivID) {
                 milestones: []
             })
         })
+    }
 
-        _build();
-    } 
-
-    function milestones(milestones) {
+    function _processMilestones() {
+        var milestones = roadmap.userData.milestones;
         var milestoneRankMax = 0;
 
         roadmap.data.forEach(function(column, idx) {
@@ -37,20 +61,44 @@ function roadmap(wrapperDivID) {
             if (!milestone.belongsToColumn) {
                 milestone.belongsToColumn = 1;
             }
-            
-            var milestoneIdx = milestone.belongsToColumn - 1;
 
-            if (!roadmap.data[milestoneIdx]) {
-                throw new Error('Milestone has invaid belongsToColumn');
+            var columnIdx = milestone.belongsToColumn - 1;
+
+            if (!roadmap.data[columnIdx]) {
+                if (roadmap.userData.columnNames.length > 0) {
+                    console.log(milestone);
+                    console.warn('Milestone has invaid belongsToColumn');
+                }
+
+                return;
             }
 
             if (!milestone.rank) {
-                milestone.rank = roadmap.data[milestoneIdx].milestones.length;
+                milestone.rank = roadmap.data[columnIdx].milestones.length;
             }
 
-            roadmap.data[milestoneIdx].milestones[milestone.rank] = milestone;
+            if (milestone.rank < 0) {
+                console.log(milestone);
+                throw new Error('Milestone has invaid rank - Ranks must be non-negative numbers');
+            }
 
-            roadmap.data[milestoneIdx].totalDifficulty += milestone.difficulty || roadmap.defaultMilestoneDifficulty;
+            if (milestone.rank % 1 !== 0) {
+                console.log(milestone);
+                throw new Error('Milestone has invaid rank - Ranks must be whole numbers');
+            }
+            
+            if (roadmap.data[columnIdx].milestones[milestone.rank]) {
+                console.log(milestone);
+                throw new Error('Milestone has invaid rank - A milestone with that rank is already defined');
+            }
+
+            if (!milestone.difficulty) {
+                milestone.difficulty = roadmap.defaultMilestoneDifficulty;
+            }
+
+            roadmap.data[columnIdx].milestones[milestone.rank] = milestone;
+
+            roadmap.data[columnIdx].totalDifficulty += milestone.difficulty;
 
             if (milestone.rank > milestoneRankMax) {
                 milestoneRankMax = milestone.rank;
@@ -60,11 +108,19 @@ function roadmap(wrapperDivID) {
         roadmap.data.forEach(function(column, columnIdx) {
             var count = 0;
 
+            if (column.milestones.length > 0 && column.milestones[column.milestones.length - 1].rank !== milestoneRankMax) {
+                var replacingRank = column.milestones.length - 1;
+
+                roadmap.data[columnIdx].milestones[milestoneRankMax] = column.milestones[replacingRank];
+                roadmap.data[columnIdx].milestones[milestoneRankMax].rank = milestoneRankMax;
+                roadmap.data[columnIdx].milestones[replacingRank] = null;
+            }
+
             while (count <= milestoneRankMax) {
                 if (!column.milestones[count]) {
                     roadmap.data[columnIdx].milestones[count] = {
                         spacer: true,
-                        belongsToColumn: columnIdx + 1,
+                        belongsToColumn: columnIdx + 1, 
                         rank: count
                     }
                 }
@@ -130,8 +186,6 @@ function roadmap(wrapperDivID) {
 
             roadmap.data[columnIdx].milestoneVersions = versionThis(roadmap.data[columnIdx].milestones, '2 decimals', 1);
         })
-
-        _build();
     }
 
     function style(columnColors) {
@@ -256,25 +310,30 @@ function roadmap(wrapperDivID) {
 
 
         function buildColumn(columnData, columnIdx) {
-            if (roadmap.milestoneCompleteData[columnIdx]) {
-                var totalComplete = 0;
-                var completedMilestones = [];
+            var totalComplete = 0;
+            var completedMilestones = [];
 
+            if (roadmap.milestoneCompleteData[columnIdx]) {
                 roadmap.milestoneCompleteData[columnIdx].sort().forEach(function(milestoneNum) {
-                    if (getNextBelowMilestone(columnIdx, milestoneNum).status !== 'pending') {
+                    if (getNextBelowMilestone(columnIdx, milestoneNum).status !== 'pending' && roadmap.data[columnIdx].milestones[milestoneNum]) {
                         roadmap.data[columnIdx].milestones[milestoneNum].status = 'complete';
                         totalComplete += columnData.milestones[milestoneNum].difficulty || roadmap.defaultMilestoneDifficulty;
                         completedMilestones.push(milestoneNum);
                     }
                 });
+            }
 
-                columnData.milestones.forEach(function(milestone, idx) {
-                    if (milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
-                        totalComplete += milestone.difficulty || roadmap.defaultMilestoneDifficulty;
-                    }
-                })
-                
-                roadmap.data[columnIdx].progressComplete = ((totalComplete / columnData.totalDifficulty) * 100).toFixed(0);
+            columnData.milestones.forEach(function(milestone, idx) {
+                if (milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
+                    totalComplete += milestone.difficulty || roadmap.defaultMilestoneDifficulty;
+                    completedMilestones.push(idx);
+                }
+            })
+            
+            roadmap.data[columnIdx].progressComplete = ((totalComplete / columnData.totalDifficulty) * 100).toFixed(0);
+
+            if (isNaN(roadmap.data[columnIdx].progressComplete)) {
+                roadmap.data[columnIdx].progressComplete = 100;
             }
 
             var column = document.createElement('div');
@@ -353,7 +412,7 @@ function roadmap(wrapperDivID) {
                     var widthDiff = widthDiffIdx * (roadmap.nodeWidth + roadmap.columnSpacing);
                     var isNoEnd = true;
 
-                    var paddingAndArrow = 12 + (2 * Math.abs(heightDiffIdx));
+                    var paddingAndArrow = 12 + (4 * Math.abs(heightDiffIdx));
 
                     if (roadmap.columnColors[columnIdx] && milestone.status === 'complete') {
                         startColor = roadmap.columnColors[columnIdx];
@@ -557,41 +616,48 @@ function roadmap(wrapperDivID) {
         //all the milestone objects for a category are sent here, first to last
         var difficulty= 0;
         var responseSkeleton = ['0.10.0', '0.25.0', '0.40.0', '0.80.0', '0.90.0', '1.0.0'];
+        var milestoneCount = 0;
 
         for (i in milestoneObjs) {
-            difficulty = difficulty + (milestoneObjs[i].difficulty || roadmap.defaultMilestoneDifficulty);
+            if (!milestoneObjs[i].spacer) {
+                milestoneCount++;
+                difficulty += milestoneObjs[i].difficulty;
+            }
         }
     
         var lastGeneratedMilestoneNum = 0;
         var loopCount = 0;
         responseSkeleton=[];
-
-        for (j in milestoneObjs) {
-            difficulty = difficulty + (milestoneObjs[i].difficulty || roadmap.defaultMilestoneDifficulty);
-            var thisWeight = (milestoneObjs[i].difficulty || roadmap.defaultMilestoneDifficulty) / difficulty;
-
-            thisMilestoneVersion = lastGeneratedMilestoneNum + thisWeight;
-            lastGeneratedMilestoneNum = thisMilestoneVersion;
-    
-            if(format == "2 decimals"){
-                if(loopCount >= milestoneObjs.length - 1){
-                    var endingPoint = parseInt(startingPoint) + 1;
-                    responseSkeleton.push(endingPoint.toString() + ".0.0");
+        
+        for (i in milestoneObjs) {
+            console.log(milestoneObjs);
+            if (!milestoneObjs[i].spacer) {
+                var thisWeight = milestoneObjs[i].difficulty / difficulty;
+                
+                lastGeneratedMilestoneNum += thisWeight;
+        
+                if(format == "2 decimals"){
+                    if(loopCount >= milestoneCount - 1){
+                        var endingPoint = parseInt(startingPoint) + 1;
+                        responseSkeleton.push(endingPoint.toString() + ".0.0");
+                    } else {
+                        responseSkeleton.push(startingPoint.toString() + "" + lastGeneratedMilestoneNum.toFixed(2).toString().replace("0.", ".") + ".0"); 
+                    }
                 } else {
-                    responseSkeleton.push(startingPoint.toString() + "" + lastGeneratedMilestoneNum.toFixed(2).toString().replace("0.", ".") + ".0"); 
+                    if (loopCount >= milestoneCount - 1) {
+                        var endingPoint = parseInt(startingPoint) + 1;
+                        responseSkeleton.push(endingPoint + ".0");
+                    } else{
+                        responseSkeleton.push(startingPoint + "." + lastGeneratedMilestoneNum.toFixed(2).toString().replace("0.", ".")); 
+                    }
                 }
-            } else {
-                if (loopCount >= milestoneObjs.length-1) {
-                    var endingPoint = parseInt(startingPoint) + 1;
-                    responseSkeleton.push(endingPoint + ".0");
-                } else{
-                    responseSkeleton.push(startingPoint + "." + lastGeneratedMilestoneNum.toFixed(2).toString().replace("0.", ".")); 
-                }
-            }
 
-            loopCount = loopCount + 1;
+                loopCount = loopCount + 1;
+            } else {
+                responseSkeleton.push("");
+            }
         }
-    
+        
         return responseSkeleton;
     }
 
