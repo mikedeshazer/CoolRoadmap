@@ -306,8 +306,8 @@ function roadmap(wrapperDivID) {
 
         totalPercent /= roadmap.data.length;
         
-        overallProgressInner.style.width = totalPercent + '%';
-        overallProgressContent.innerText = totalPercent + '% Complete';
+        overallProgressInner.style.width = totalPercent.toFixed(0) + '%';
+        overallProgressContent.innerText = totalPercent.toFixed(0) + '% Complete';
         overallProgress.appendChild(overallProgressInner);
         overallProgress.appendChild(overallProgressContent);
 

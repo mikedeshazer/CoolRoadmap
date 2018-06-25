@@ -27,13 +27,13 @@ Add `dist/CoolRoadmap.min.js` and `dist/CoolRoadmap.min.css` to your project and
     myroadmap.milestones([
         {
             title: 'Rank 0 - col 1',
-            description: 'Discriptive text',
+            descriptionHTML: 'Discriptive text',
             belongsToColumn: 1,
             rank: 0
         },
         {
             title: 'Rank 0 - col 2',
-            description: 'Discriptive text',
+            descriptionHTML: 'Discriptive text',
             belongsToColumn: 2,
             forwardConnect: [1, 1],
             rank: 1
@@ -66,7 +66,7 @@ Create the columns for the roadmap. The `milestones` argument is an object conta
 ```javascript
 {
     title: // Milestone title
-    description: // Milestone descriptive text to be shown on click
+    descriptionHTML: // Milestone descriptive text/HTML to be shown on click
     belongsToColumn: // The column number that the milestone belongs to (starts at 1)
     forwardConnect: [
         // The column of the node this node connects to,
@@ -82,7 +82,7 @@ Create the columns for the roadmap. The `milestones` argument is an object conta
 myroadmap.milestones([
     {
         title: 'Rank 0 - col 1',
-        description: 'Discriptive text',
+        descriptionHTML: '<strong>HTML is even supported</strong>',
         belongsToColumn: 1,
         rank: 0,
         difficult: 10
