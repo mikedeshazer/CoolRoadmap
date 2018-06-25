@@ -52,6 +52,7 @@ function roadmap(wrapperDivID) {
     function _processMilestones() {
         var milestones = roadmap.userData.milestones;
         var milestoneRankMax = 0;
+        var milestoneRankMin = 99999999;
 
         roadmap.data.forEach(function(column, idx) {
             roadmap.data[idx].milestones = [];
@@ -77,6 +78,8 @@ function roadmap(wrapperDivID) {
                 milestone.rank = roadmap.data[columnIdx].milestones.length;
             }
 
+            milestone.rank = parseFloat(milestone.rank);
+
             if (milestone.rank < 0) {
                 console.log(milestone);
                 throw new Error('Milestone has invaid rank - Ranks must be non-negative numbers');
@@ -86,6 +89,8 @@ function roadmap(wrapperDivID) {
                 console.log(milestone);
                 throw new Error('Milestone has invaid rank - Ranks must be whole numbers');
             }
+
+            milestone.rank = parseInt(milestone.rank);
             
             if (roadmap.data[columnIdx].milestones[milestone.rank]) {
                 console.log(milestone);
@@ -96,6 +101,8 @@ function roadmap(wrapperDivID) {
                 milestone.difficulty = roadmap.defaultMilestoneDifficulty;
             }
 
+            milestone.difficulty = parseInt(milestone.difficulty);
+
             roadmap.data[columnIdx].milestones[milestone.rank] = milestone;
 
             roadmap.data[columnIdx].totalDifficulty += milestone.difficulty;
@@ -103,10 +110,14 @@ function roadmap(wrapperDivID) {
             if (milestone.rank > milestoneRankMax) {
                 milestoneRankMax = milestone.rank;
             }
+
+            if (milestone.rank < milestoneRankMin) {
+                milestoneRankMin = milestone.rank;
+            }
         })
 
         roadmap.data.forEach(function(column, columnIdx) {
-            var count = 0;
+            var count = milestoneRankMin;
 
             if (column.milestones.length > 0 && column.milestones[column.milestones.length - 1].rank !== milestoneRankMax) {
                 var replacingRank = column.milestones.length - 1;
@@ -116,7 +127,7 @@ function roadmap(wrapperDivID) {
                 roadmap.data[columnIdx].milestones[replacingRank] = null;
             }
 
-            while (count <= milestoneRankMax) {
+            while (count <= milestoneRankMax && count >= milestoneRankMin) {
                 if (!column.milestones[count]) {
                     roadmap.data[columnIdx].milestones[count] = {
                         spacer: true,
@@ -136,7 +147,7 @@ function roadmap(wrapperDivID) {
             }
 
             count = milestoneRankMax;
-            while (count >= 0) {
+            while (count >= milestoneRankMin) {
                 if (!roadmap.data[columnIdx].milestones[count].spacer) {
                     var nextAbove = null;
                     var innerCount = count + 0;
@@ -241,12 +252,13 @@ function roadmap(wrapperDivID) {
             columnCount++;
             var columnElem = buildColumn(columnData, idx);
 
-            var milstoneRanks = Object.keys(columnData.milestones).sort().reverse();
+            var milstoneRanks = Object.keys(columnData.milestones).sort(function(a, b) {return a - b;}).reverse();
+            var milestoneCount = 0;
             milstoneRanks.forEach(function(rank) {
                 var milestone = columnData.milestones[rank];
                 if (roadmap.nodeWidth === -1) {
                     // Dynamically get the width, height, and spacing of a node in a column
-                    var fakeMilestoneElem = buildMilestone(milestone, idx);
+                    var fakeMilestoneElem = buildMilestone(milestone, idx, milestoneCount);
                     var fakeColumn = columnElem.cloneNode(true);
                     fakeColumn.appendChild(fakeMilestoneElem);
 
@@ -278,8 +290,9 @@ function roadmap(wrapperDivID) {
                     roadmap.wrapperElement.innerHTML = '';
                 }
 
-                var milestoneElem = buildMilestone(milestone, idx);
+                var milestoneElem = buildMilestone(milestone, idx, milestoneCount);
                 columnElem.appendChild(milestoneElem);
+                milestoneCount++;
             })
 
             wrapper.appendChild(columnElem);
@@ -315,17 +328,17 @@ function roadmap(wrapperDivID) {
 
             if (roadmap.milestoneCompleteData[columnIdx]) {
                 roadmap.milestoneCompleteData[columnIdx].sort().forEach(function(milestoneNum) {
-                    if (getNextBelowMilestone(columnIdx, milestoneNum).status !== 'pending' && roadmap.data[columnIdx].milestones[milestoneNum]) {
+                    if (getNextBelowMilestone(columnIdx, milestoneNum).status !== 'pending' && roadmap.data[columnIdx].milestones[milestoneNum] && !roadmap.data[columnIdx].milestones[milestoneNum].spacer) {
                         roadmap.data[columnIdx].milestones[milestoneNum].status = 'complete';
-                        totalComplete += columnData.milestones[milestoneNum].difficulty || roadmap.defaultMilestoneDifficulty;
+                        totalComplete += columnData.milestones[milestoneNum].difficulty;
                         completedMilestones.push(milestoneNum);
                     }
                 });
             }
 
             columnData.milestones.forEach(function(milestone, idx) {
-                if (milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
-                    totalComplete += milestone.difficulty || roadmap.defaultMilestoneDifficulty;
+                if (!milestone.spacer && milestone.status === 'complete' && completedMilestones.indexOf(idx) === -1) {
+                    totalComplete += milestone.difficulty;
                     completedMilestones.push(idx);
                 }
             })
@@ -368,7 +381,7 @@ function roadmap(wrapperDivID) {
             return column;
         }
 
-        function buildMilestone(milestone, columnIdx) {
+        function buildMilestone(milestone, columnIdx, milestoneCount) {
             var milstoneElem = document.createElement('div');
 
             if (milestone.title) {
@@ -377,7 +390,7 @@ function roadmap(wrapperDivID) {
                 
                 title.innerText = milestone.title;
                 title.classList += roadmap.classNamePrefix + 'title';
-                version.innerText = roadmap.data[columnIdx].milestoneVersions[milestone.rank];
+                version.innerText = roadmap.data[columnIdx].milestoneVersions[milestoneCount];
 
                 milstoneElem.appendChild(title);
                 milstoneElem.appendChild(version);
@@ -391,10 +404,13 @@ function roadmap(wrapperDivID) {
                 milstoneElem.classList += ' ' + roadmap.classNamePrefix + 'spacer'
             }
 
-            if (roadmap.columnColors[columnIdx] && milestone.status === 'complete') {
-                milstoneElem.style.borderColor = roadmap.columnColors[columnIdx];
+            if (milestone.status === 'complete') {
+                if (roadmap.columnColors[columnIdx]) {
+                    milstoneElem.style.borderColor = roadmap.columnColors[columnIdx];
+                    pseudoStyle(milstoneElem, 'after', 'background', roadmap.columnColors[columnIdx]);
+                }
+
                 milstoneElem.classList += ' ' + roadmap.classNamePrefix + 'complete';
-                pseudoStyle(milstoneElem, 'after', 'background', roadmap.columnColors[columnIdx]);
             }
 
             if (milestone.forwardConnect) {
@@ -414,11 +430,8 @@ function roadmap(wrapperDivID) {
 
                     var paddingAndArrow = 12 + (4 * Math.abs(heightDiffIdx));
 
-                    if (roadmap.columnColors[columnIdx] && milestone.status === 'complete') {
+                    if (milestone.status === 'complete') {
                         startColor = roadmap.columnColors[columnIdx];
-                    }
-
-                    if (roadmap.columnColors[columnIdx + widthDiffIdx] && milestone.status === 'complete') {
                         endColor = roadmap.columnColors[columnIdx + widthDiffIdx];
                     }
 
@@ -475,8 +488,10 @@ function roadmap(wrapperDivID) {
 
                     arrowElem.style.transform = "rotate(" + transformDegrees + "deg)";
                     arrowElem.style.width = distance;
-                    arrowElem.style.backgroundImage = 'linear-gradient(to right, ' + startColor + ', ' + endColor + ')';
-                    pseudoStyle(arrowElem, 'before', 'border-color', endColor);
+                    if (startColor) {
+                        arrowElem.style.backgroundImage = 'linear-gradient(to right, ' + startColor + ', ' + endColor + ')';
+                        pseudoStyle(arrowElem, 'before', 'border-color', endColor);
+                    }
 
                     milstoneElem.appendChild(arrowElem);
                 });
@@ -617,20 +632,20 @@ function roadmap(wrapperDivID) {
         var difficulty= 0;
         var responseSkeleton = ['0.10.0', '0.25.0', '0.40.0', '0.80.0', '0.90.0', '1.0.0'];
         var milestoneCount = 0;
+        var milstoneRanks = Object.keys(milestoneObjs).sort(function(a, b) {return a - b;});
 
-        for (i in milestoneObjs) {
+        milstoneRanks.forEach(function(i) {
             if (!milestoneObjs[i].spacer) {
                 milestoneCount++;
                 difficulty += milestoneObjs[i].difficulty;
             }
-        }
+        });
     
         var lastGeneratedMilestoneNum = 0;
         var loopCount = 0;
         responseSkeleton=[];
         
-        for (i in milestoneObjs) {
-            console.log(milestoneObjs);
+        milstoneRanks.forEach(function(i) {
             if (!milestoneObjs[i].spacer) {
                 var thisWeight = milestoneObjs[i].difficulty / difficulty;
                 
@@ -656,9 +671,9 @@ function roadmap(wrapperDivID) {
             } else {
                 responseSkeleton.push("");
             }
-        }
+        });
         
-        return responseSkeleton;
+        return responseSkeleton.reverse();
     }
 
     function pseudoStyle(hostElement, pseudoElement, prop, value){
