@@ -1,7 +1,7 @@
 @classNamePrefix: coolRoadmap-;
 @nodeWidth: 200;
 @nodeHeight: 50;
-@spacerHeight: @nodeHeight+2;
+@spacerHeight: @nodeHeight+4;
 @columnSpacing: 20;
 @progressContentSize: 12;
 @progrssContentPadding: 4;
@@ -226,6 +226,7 @@
 
                 &.@{classNamePrefix}complete {
                     background: #1b1e36;
+                    border-color: #6a4bcc;
                 }
 
                 &.@{classNamePrefix}spacer {
@@ -286,7 +287,7 @@
             z-index: -1;
             left: calc(100% + 4px);
             height: 3px;
-            background-color: black;
+            background-color: #6a4bcc;
             transform-origin: left;
         
             &:before{
@@ -299,6 +300,7 @@
                 transform: rotate(45deg);
                 border-width: 5px;
                 border-style: solid;
+                border-color: #6a4bcc;
                 border-bottom-color: transparent !important;
                 border-left-color: transparent !important;
             }

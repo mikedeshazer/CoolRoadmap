@@ -36,7 +36,11 @@
     height:70%;
     left:0px;
     bottom:0px;
+<<<<<<< HEAD
    // background-color:#000;
+=======
+   width: calc(70% - 60px);
+>>>>>>> dev1
 }
 
 #sourceBox{
