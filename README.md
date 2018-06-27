@@ -121,7 +121,9 @@ myroadmap.columnColors([
 
 ##Donate
 
-*Bitcoin: 1J5KSzvYa3cD2nP3CrZpFwv4eanMdYqeF5 
-*Ether: 0xed7dBeb7998Ec79D99379dA81c4b54f74abc69d4
+Bitcoin: 1J5KSzvYa3cD2nP3CrZpFwv4eanMdYqeF5 
+
+Ether: 0xed7dBeb7998Ec79D99379dA81c4b54f74abc69d4
+
 
 
