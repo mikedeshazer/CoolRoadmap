@@ -10,6 +10,8 @@
 
 ## Getting started
 
+Getting started demos are in the demo folder. The ex4.htm is probably the best example to get started with. Tests can be conducted via the demo/test.htm file.
+
 Add `dist/CoolRoadmap.min.js` and `dist/CoolRoadmap.min.css` to your project and your html file and create a new roadmap with some columns and milestones.
 
 ```html
@@ -85,7 +87,7 @@ myroadmap.milestones([
         descriptionHTML: '<strong>HTML is even supported</strong>',
         belongsToColumn: 1,
         rank: 0,
-        difficult: 10
+        difficulty: 10
     }
 ])
 ```
@@ -116,3 +118,10 @@ myroadmap.columnColors([
 * Connect roadmap items across columns
 * Simple to style each node
 * Overall progress bar
+
+##Donate
+
+*Bitcoin: 1J5KSzvYa3cD2nP3CrZpFwv4eanMdYqeF5 
+*Ether: 0xed7dBeb7998Ec79D99379dA81c4b54f74abc69d4
+
+
