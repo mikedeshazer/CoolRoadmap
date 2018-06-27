@@ -119,7 +119,7 @@ myroadmap.columnColors([
 * Simple to style each node
 * Overall progress bar
 
-##Donate
+## Donate
 
 Bitcoin: 1J5KSzvYa3cD2nP3CrZpFwv4eanMdYqeF5 
 
