@@ -1,7 +1,9 @@
+var roadmap1 = new roadmap('renderingBox');
+
 function renderRoadmapTest(data, type){
 
     if(type=="category"){
-        catObj =  $.parseJSON($('#catJSON').val());
+        catObj =  roadmap1.roadmapRaw.userData.columnNames;
         catObj.push(data);
         $('#catJSON').val(JSON.stringify(catObj));
 
@@ -19,7 +21,7 @@ function renderRoadmapTest(data, type){
         }, 100)
     }
     else{
-             mObj =  $.parseJSON($('#milesJSON').val());
+             mObj =  roadmap1.roadmapRaw.userData.milestones;
             mObj.push(data);
             for(i in mObj){
                 mObj[i]['belongsToColumn'] = parseInt(mObj[i]['belongsToColumn']);
@@ -38,8 +40,6 @@ function renderRoadmapTest(data, type){
 }
 
 function roadmapRender(catData, milesData){
-
-    roadmap1 = new roadmap('renderingBox');
     roadmap1.columns(catData);
     roadmap1.milestones(milesData);
 
