@@ -190,6 +190,8 @@ function roadmap(wrapperDivID) {
                         }
                     }
 
+                    roadmap.data[columnIdx].milestones[count].origForwardConnect = roadmap.data[columnIdx].milestones[count].forwardConnect;
+
                     if (roadmap.data[columnIdx].milestones[count].forwardConnect && typeof roadmap.data[columnIdx].milestones[count].forwardConnect[0] !== "object") {
                         roadmap.data[columnIdx].milestones[count].forwardConnect = [
                             [
@@ -450,6 +452,9 @@ function roadmap(wrapperDivID) {
 
             if (milestone.forwardConnect) {
                 milestone.forwardConnect.forEach(function(forwardConnect) {
+                    if (getMilestone(forwardConnect[0] - 1, forwardConnect[1]).spacer) {
+                        return;
+                    }
                     var startColor = '#2e3148';
                     var endColor = '#2e3148';
                     var arrowElem = document.createElement('div');
@@ -536,6 +541,7 @@ function roadmap(wrapperDivID) {
 
             milstoneElem.ondragstart = function(ev) {
                 ev.dataTransfer.dropEffect = "move";
+                ev.srcElement.classList.add(roadmap.classNamePrefix + 'dragging');
                 ev.dataTransfer.setData("text/plain", JSON.stringify(milestone));
             }
 
@@ -581,36 +587,38 @@ function roadmap(wrapperDivID) {
                 var count = rank;
                 var length = roadmap.data[columnIdx].milestones.length;
 
-                // while (count < length) {
-                //     count++;
-                //     roadmap.data[columnIdx].milestones[count] = roadmap.data[columnIdx].milestones[count - 1];
-                //     roadmap.data[columnIdx].milestones[count].rank = count;
-                // }
+                if (!roadmap.data[columnIdx].milestones[rank].spacer) {
+                    // if (columnIdx == milestoneData.belongsToColumn - 1 && (rank === milestoneData.rank - 1 || rank === milestoneData.rank + 1)) {
+                    //     return;
+                    // }
+
+                    while (count < length) {
+                        count++;
+                        roadmap.data[columnIdx].milestones[count] = roadmap.data[columnIdx].milestones[count - 1];
+                        roadmap.data[columnIdx].milestones[count].rank = count;
+                    }
+                }
 
                 roadmap.data[columnIdx].milestones[rank] = Object.assign({}, milestoneData);
                 roadmap.data[columnIdx].milestones[rank].belongsToColumn = columnIdx + 1;
                 roadmap.data[columnIdx].milestones[rank].rank = rank;
 
-                roadmap.data[milestoneData.belongsToColumn - 1].milestones[milestoneData.rank] = {
-                    spacer: true,
-                    belongsToColumn: milestoneData.belongsToColumn, 
-                    rank: milestoneData.rank
-                };
-
-                console.log(roadmap.data[columnIdx].milestones[rank + 1]);
+                delete roadmap.data[milestoneData.belongsToColumn - 1].milestones[milestoneData.rank];
 
                 var milestones = [];
 
                 roadmap.data.forEach(function(column) {
                     column.milestones.forEach(function(milestone) {
                         if (!milestone.spacer) {
+                            milestone.forwardConnect = milestone.origForwardConnect;
                             milestones.push(milestone);
                         }
                     })
                 })
                 
                 roadmap.userData.milestones = milestones;
-                _processMilestones()
+                _processMilestones();
+                _updateURL();
                 _build();
             }
 
@@ -731,6 +739,9 @@ function roadmap(wrapperDivID) {
     }
 
     function getMilestone(column, rank) {
+        if (!roadmap.data[column]) {
+            return {};
+        }
         return roadmap.data[column].milestones[rank];
     }
 
