@@ -19,7 +19,9 @@ gulp.task('css-min', function() {
 gulp.task('js-min', function() {
     return gulp
         .src('src/**/*.js')
+        .pipe(sourcemaps.init())
         .pipe(concat('CoolRoadmap.min.js'))
+        .pipe(sourcemaps.write('maps'))
         .pipe(gulp.dest('dist/'));
 });
 
