@@ -16,9 +16,10 @@
 
         <div id='CoolRoadmapWrapper'></div>
 
+        <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
         <script src='../dist/CoolRoadmap.min.js'></script>
         <script>
-            var myroadmap = new roadmap('CoolRoadmapWrapper');
+            var myroadmap = new Roadmap('CoolRoadmapWrapper');
 
             myroadmap.columns([
                 "Component 1",
@@ -41,7 +42,7 @@
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 1,
                     status: "complete",
-                    forwardConnect: [1, 2],
+                    connections: [[1, 2]],
                     difficulty: 10,
                     rank: 0
                 },
@@ -49,7 +50,7 @@
                     title: "Rank 2 - col 1",
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 1,
-                    forwardConnect: [1, 3],
+                    connections: [[1, 3]],
                     status: "complete",
                     difficulty: 40,
                     rank: 2
@@ -73,7 +74,7 @@
                     title: "Rank 0 - col 2",
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 2,
-                    forwardConnect: [1, 2],
+                    connections: [[1, 4]], 
                     status: "complete",
                     difficulty: 10,
                     rank: 0
@@ -82,7 +83,7 @@
                     title: "Rank 1 - col 2",
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 2,
-                    forwardConnect: [1, 2],
+                    connections: [[4, 3]],
                     rank: 1
                 },
                 {
@@ -97,7 +98,7 @@
                     title: "Rank 0 - col 3",
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 3,
-                    forwardConnect: [3, 4],
+                    connections: [[3, 4]],
                     rank: 0
                 },
                 {
@@ -111,14 +112,14 @@
                     title: "Rank 0 - col 4",
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 4,
-                    forwardConnect: [4, 2],
+                    connections: [[4, 2]],
                     rank: 0
                 },
                 {
                     title: "Rank 2 - col 4",
                     descriptionHTML: "Discriptive text",
                     belongsToColumn: 4,
-                    forwardConnect: [2, 4],
+                    connections: [[2, 4]],
                     rank: 2
                 },
                 {
@@ -127,73 +128,7 @@
                     belongsToColumn: 4,
                     difficulty: 40,
                     rank: 3
-                },
-                {
-                    title: "Rank 4 - col 4",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 4,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 0 - col 5",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 5,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 1 - col 5",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 5,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 2 - col 5",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 5,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 3 - col 5",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 5,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 4 - col 5",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 5,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 0 - col 6",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 6,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 0 - col 6",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 6,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 0 - col 6",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 6,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 0 - col 6",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 6,
-                    difficulty: 30
-                },
-                {
-                    title: "Rank 0 - col 6",
-                    descriptionHTML: "Discriptive text",
-                    belongsToColumn: 6,
-                    difficulty: 30
-                },
+                }
             ])
 
             myroadmap.markComplete([

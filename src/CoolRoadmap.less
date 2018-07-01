@@ -2,7 +2,7 @@
 @nodeWidth: 200;
 @nodeHeight: 50;
 @spacerHeight: @nodeHeight+4;
-@columnSpacing: 20;
+@columnSpacing: 40;
 @progressContentSize: 12;
 @progrssContentPadding: 4;
 
@@ -132,6 +132,14 @@
     overflow-x: auto;
     margin: 0 auto;
 
+    &.@{classNamePrefix}isDragging {
+        .@{classNamePrefix}wrapper {
+            .@{classNamePrefix}arrow {
+                display: none;
+            }
+        }
+    }
+
     &.center {
         max-width: none;
         width: 100%;
@@ -192,6 +200,10 @@
                     border-color: #3f54f3 !important;
                     cursor: pointer;
 
+                    &.@{classNamePrefix}spacer {
+                        border-color: transparent !important;
+                    }
+
                     &:after {
                         background:  #3f54f3 !important;
                     }
@@ -224,6 +236,12 @@
                     line-height: 18px;
                 }
 
+                &.@{classNamePrefix}dragging {
+                    .@{classNamePrefix}arrow {
+                        visibility: hidden;
+                    }
+                }
+
                 &.@{classNamePrefix}dropTargetHover {
                     box-shadow: inset 1px 0px 5px 8px rgba(0,0,0,0.75);
                 }
@@ -234,13 +252,50 @@
                 }
 
                 &.@{classNamePrefix}spacer {
-                    border: none;
-                    height: ~'@{spacerHeight}px';
+                    border-color: transparent;
                     background: transparent;
+
+                    &:hover {
+                        cursor: auto;
+                    }
 
                     &:after {
                         display: none;
                     }
+                }
+
+                &.@{classNamePrefix}dropTarget {
+                    height: 0px;
+                    background: 0 0;
+                    position: absolute;
+                    border-bottom: none;
+                    margin: 0;
+                    margin-top: -20px;
+                    visibility: hidden;
+                    padding-top: 10px;
+                    border-left: none;
+                    border-right: none;
+                    border-radius: 0;
+
+                    &:after {
+                        display: none;
+                    }
+                }
+
+                &.@{classNamePrefix}active {
+                    visibility: visible;
+                    border: 2px solid rgba(46, 49, 72, 0.4);
+
+                    &.@{classNamePrefix}dropTarget {
+                        border-width: 1px;
+                        border-left: none;
+                        border-right: none;
+                        border-bottom: none;
+                    }
+                }
+
+                &.@{classNamePrefix}hover {
+                    border: 2px solid #3f54f3;
                 }
 
                 &.@{classNamePrefix}header {
@@ -281,18 +336,34 @@
                         }
                     }
                 }
+
+                .@{classNamePrefix}connectionPoint {
+                    top: -10px;
+                    width: 5px;
+                    left: 18px;
+                    height: 10px;
+                    position: absolute;
+                    background-color: #2e3148;
+                    border-radius: 10px;
+
+                    &:hover {
+                        background-color: #3f54f3 !important;
+                        cursor: pointer;
+                    }
+                }
             }
         }
 
         .@{classNamePrefix}arrow {
             position: absolute;
             z-index: -1;
-            top: -7px;
+            top: -4px;
             z-index: -1;
-            left: calc(100% + 4px);
-            height: 3px;
+            left: 18px;
+            height: 4px;
             background-color: #6a4bcc;
             transform-origin: left;
+            margin-left: 2px;
         
             &:before{
                 right: -7px;
@@ -316,4 +387,114 @@
             }
         }
     }
+}
+
+.@{classNamePrefix}editModeSwitch {
+    position: absolute;
+    right: 30px;
+    margin-top: 25px;
+
+    /* ON/OFF Switch */
+    .onoffswitch {
+        position: relative;
+        width: 120px;
+        display: inline-block;
+        font-size: 80%;
+   }
+    .onoffswitch .onoffswitch-label {
+        display: block;
+        overflow: hidden;
+        cursor: pointer;
+        border: 1px solid #e6e6e6;
+        -moz-border-radius: 20px;
+        -webkit-border-radius: 20px;
+        border-radius: 20px;
+        margin: 0;
+   }
+    .onoffswitch .onoffswitch-inner {
+        width: 200%;
+        margin-left: -100%;
+        -webkit-transition: margin 0.15s ease-in-out;
+        -o-transition: margin 0.15s ease-in-out;
+        -moz-transition: margin 0.15s ease-in-out;
+        transition: margin 0.15s ease-in-out;
+   }
+    .onoffswitch .onoffswitch-inner:before, .onoffswitch .onoffswitch-inner:after {
+        float: left;
+        width: 50%;
+        height: 24px;
+        padding: 0;
+        line-height: 24px;
+        font-size: 80%;
+        color: #ffffff;
+        font-weight: normal;
+        -moz-box-sizing: border-box;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+   }
+    .onoffswitch .onoffswitch-inner:before {
+        content: "Disable Edit Mode";
+        padding-left: 10px;
+        background-color: #007bc8;
+        color: #ffffff;
+   }
+    .onoffswitch .onoffswitch-inner:after {
+        content: "Enable Edit Mode";
+        padding-right: 10px;
+        background-color: #fafafa;
+        color: #3d3d3d;
+        text-align: right;
+   }
+    .onoffswitch .onoffswitch-switch {
+        width: 22px;
+        height: 22px;
+        margin: 0;
+        background: #ffffff;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+        -moz-border-radius: 50%;
+        -webkit-border-radius: 50%;
+        border-radius: 50%;
+        position: absolute;
+        top: 2px;
+        bottom: 0;
+        right: 95px;
+        -webkit-transition: right 0.15s ease-in-out;
+        -o-transition: right 0.15s ease-in-out;
+        -moz-transition: right 0.15s ease-in-out;
+        transition: right 0.15s ease-in-out;
+   }
+    .toggle-group {
+        position: relative;
+        height: 27px;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        top: 50%;
+        left: 20px;
+        margin-top: -13.5px;
+   }
+    .toggle-group input[type=checkbox] {
+        position: absolute;
+        left: 10px;
+   }
+    .toggle-group input[type=checkbox]:checked ~ .onoffswitch .onoffswitch-label .onoffswitch-inner {
+        margin-left: 0;
+   }
+    .toggle-group input[type=checkbox]:checked ~ .onoffswitch .onoffswitch-label .onoffswitch-switch {
+        right: 1px;
+        box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+   }
+    .toggle-group input[type=checkbox]:focus ~ .onoffswitch {
+        outline: thin dotted #333;
+        outline: 0;
+   }
+    .toggle-group label {
+        position: absolute;
+        cursor: pointer;
+        display: inline-block;
+        text-align: left;
+        line-height: 24px;
+        width: 100%;
+        z-index: 1;
+        height: 24px;
+        font-weight: 200;
+   }
 }
