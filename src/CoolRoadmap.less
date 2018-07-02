@@ -140,7 +140,7 @@
         }
     }
 
-    &.center {
+    &.@{classNamePrefix}center {
         max-width: none;
         width: 100%;
         text-align: center;
@@ -254,6 +254,7 @@
                 &.@{classNamePrefix}spacer {
                     border-color: transparent;
                     background: transparent;
+                    z-index: -1;
 
                     &:hover {
                         cursor: auto;
@@ -353,46 +354,59 @@
                 }
             }
         }
+    }
+}
 
-        .@{classNamePrefix}arrow {
-            position: absolute;
-            z-index: -1;
-            top: -4px;
-            z-index: -1;
-            left: 18px;
-            height: 4px;
-            background-color: #6a4bcc;
-            transform-origin: left;
-            margin-left: 2px;
-        
-            &:before{
-                right: -7px;
-                top: 2px;
-                position: absolute;
-                transform-origin: right top;
-                content: "";
-                box-sizing: border-box;
-                transform: rotate(45deg);
-                border-width: 5px;
-                border-style: solid;
-                border-color: #6a4bcc;
-                border-bottom-color: transparent !important;
-                border-left-color: transparent !important;
-            }
+.@{classNamePrefix}arrow {
+    position: absolute;
+    z-index: -1;
+    top: -4px;
+    z-index: -1;
+    left: 18px;
+    height: 4px;
+    background-color: #6a4bcc;
+    transform-origin: left;
+    margin-left: 2px;
 
-            &.@{classNamePrefix}noEnd {
-                &:before {
-                    display: none;
-                }
-            }
+    &:before{
+        right: -7px;
+        top: 2px;
+        position: absolute;
+        transform-origin: right top;
+        content: "";
+        box-sizing: border-box;
+        transform: rotate(45deg);
+        border-width: 5px;
+        border-style: solid;
+        border-color: #6a4bcc;
+        border-bottom-color: transparent !important;
+        border-left-color: transparent !important;
+    }
+
+    &.@{classNamePrefix}noEnd {
+        &:before {
+            display: none;
         }
     }
 }
 
 .@{classNamePrefix}editModeSwitch {
     position: absolute;
-    right: 30px;
     margin-top: 25px;
+    right: -33px;
+
+    &.@{classNamePrefix}editModeOn {
+        right: 30px;
+        
+        .@{classNamePrefix}editModeHints {
+            font-size: 12px;
+            color: white;
+        }
+    }
+
+    .@{classNamePrefix}editModeHints {
+        color: transparent;
+    }
 
     /* ON/OFF Switch */
     .onoffswitch {

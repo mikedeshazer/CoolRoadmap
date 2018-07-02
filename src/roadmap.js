@@ -15,14 +15,16 @@ function Roadmap(wrapperDivId) {
         nodeSizes: {
             width: -1
         },
-        isEditMode: false,
+        isEditMode: true,
         classnamePrefix: 'coolRoadmap-',
         wrapperDivId: wrapperDivId,
         columns: [],
         milestones: [],
         styles: [],
         defaultMilestoneDifficulty: 10,
-        overallProgress: 0
+        overallProgress: 0,
+        mouse: {},
+        connectionPointPositions: []
     };
 
     this._userData = {
@@ -35,6 +37,9 @@ function Roadmap(wrapperDivId) {
     $(() => {
         var blob = window.location.href.split('q=')[1];
 
+        this._mouseMove();
+        this._onResize();
+        
         if (blob) {
             this._userData = JSON.parse(atob(blob));
             

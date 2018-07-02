@@ -7,6 +7,6 @@ Roadmap.prototype._pseudoStyle = function(hostElement, pseudoElement, prop, valu
 
     hostElement.addClass(className);
     
-    _sheet.innerHTML += "." + this._data.classnamePrefix + "container ." + className + ":" + pseudoElement + "{" + prop + ":" + value + " !important}";
+    _sheet.innerHTML += "." + this._data.classnamePrefix + "container ." + className + ":" + pseudoElement + "{" + prop + ":" + value + "}";
     _head.appendChild(_sheet);
 }
