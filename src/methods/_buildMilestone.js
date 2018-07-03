@@ -10,6 +10,27 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
     if (milestoneData.spacer || milestoneData.dropTarget) {
         if (milestoneData.spacer) {
             milestone.addClass(this._data.classnamePrefix + 'spacer');
+
+            const title = $('<div>', {
+                class: this._data.classnamePrefix + 'title'
+            });
+            const version = $('<div>');
+    
+            title.html("&plus;");
+            version.text("Add Milestone");
+
+            milestone.append(title);
+            milestone.append(version);
+
+            milestone.click(() => {
+                this._userData.milestones.push({
+                    belongsToColumn: milestoneData.belongsToColumn,
+                    rank: milestoneData.rank,
+                    title: 'New Milestone'
+                })
+
+                this.milestones(this._userData.milestones);
+            })
         } else {
             milestone.addClass(this._data.classnamePrefix + 'dropTarget');
         }
@@ -66,6 +87,20 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
         }
     } else {
         if (this._data.isEditMode) {
+            const removeIcon = $('<div>', {
+                class: this._data.classnamePrefix + 'remove'
+            });
+            removeIcon.css('background-color', this._data.columns[milestoneData.belongsToColumnIdx].color);
+        
+            removeIcon.text('X');
+
+            removeIcon.click(() => {
+                this._userData.milestones.splice(milestoneData.userDataIdx, 1);
+
+                this.milestones(this._userData.milestones);
+            })
+
+            milestone.append(removeIcon);
             milestone.draggable({
                 revert: 'invalid',
                 start: () => {

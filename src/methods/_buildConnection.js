@@ -38,6 +38,17 @@ Roadmap.prototype._buildConnection = function(milestoneData, connectionData, mil
             connectionPointEnd = this._data.connectionPointPositions[5];
             paddingAndArrow = 12;
             connection.removeClass(this._data.classnamePrefix + 'noEnd');
+
+            const nextAbove = this._getNextAboveMilestone(milestoneData.belongsToColumnIdx, milestoneData.rank);
+            if (nextAbove.rank !== connectingMilestone.rank) {
+                connection.remove();
+                milestoneData.connections.forEach((conenction, idx) => {
+                    if (conenction === connectionData) {
+                        this._userData.milestones[milestoneData.userDataIdx].connections.splice(idx, 1);
+                    }
+                });
+                return;
+            }
         } else if (widthDiffIdx <= -1) {
             // to the left
             connectionPointStart = this._data.connectionPointPositions[0];

@@ -8,6 +8,11 @@ Roadmap.prototype.milestones = function(milestones) {
     this._data.highestRank = 0;
 
     const columnRanks = [];
+
+    this._userData.columnNames.forEach(() => {
+        columnRanks.push([]);
+    })
+
     milestones.forEach((milestone, idx) => {
         if (typeof milestone.rank !== 'number') {
             console.log(milestone);
@@ -40,6 +45,10 @@ Roadmap.prototype.milestones = function(milestones) {
 
         columnRanks[milestone.belongsToColumnIdx].push(milestone.rank);
     });
+
+    if (this._data.isEditMode) {
+        this._data.highestRank += 1;
+    }
 
     columnRanks.forEach((columnRankData, idx) => {
         let count = 0;

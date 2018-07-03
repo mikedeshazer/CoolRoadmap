@@ -139,7 +139,8 @@ Roadmap.prototype._build = function() {
     editModeSwitch.html('<div class="toggle-group"><input type="checkbox" name="on-off-switch" id="on-off-switch" ' + checked + ' tabindex="1"><label for="on-off-switch"></label><div class="onoffswitch pull-right" aria-hidden="true"><div class="onoffswitch-label"><div class="onoffswitch-inner"></div><div class="onoffswitch-switch"></div></div></div></div>');
     editModeSwitch.click(() => {
         this._data.isEditMode = !this._data.isEditMode;
-        this._build();
+        this._editorJSON();
+        this.milestones(this._userData.milestones);
     })
 
     const editModeHints = $('<div>', {
@@ -160,6 +161,12 @@ Roadmap.prototype._build = function() {
 
     container.append(innerWrapper);
     wrapper.append(container);
+
+    if (this._data.isEditMode) {
+        this._editorJSON();
+    } else {
+        $('#' + this._data.classnamePrefix + 'editorJSON').remove();
+    }
 
     window.history.pushState('', '', '?q=' + btoa(JSON.stringify(this._userData)));
 }
