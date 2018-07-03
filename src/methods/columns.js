@@ -33,6 +33,7 @@ Roadmap.prototype.columns = function(columnNames) {
             name: columnName,
             progressComplete: progressComplete,
             color: this._data.styles[idx],
+            columnIdx: idx
         })
     });
     

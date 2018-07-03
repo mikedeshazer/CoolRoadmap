@@ -7,7 +7,7 @@ Roadmap.prototype.markComplete = function(completeMilestones) {
     this._userData.completeMilestones = completeMilestones;
 
     this._data.milestones.forEach((milestoneData, idx) => {
-        if (this._userData.completeMilestones[milestoneData.belongsToColumnIdx] && this._userData.completeMilestones[milestoneData.belongsToColumnIdx].indexOf(milestoneData.rank)) {
+        if (this._userData.completeMilestones[milestoneData.belongsToColumnIdx] && this._userData.completeMilestones[milestoneData.belongsToColumnIdx].indexOf(milestoneData.rank) > -1) {
             this._data.milestones[idx].status = "complete";
         }
     });

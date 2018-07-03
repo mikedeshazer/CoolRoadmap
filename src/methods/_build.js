@@ -139,7 +139,8 @@ Roadmap.prototype._build = function() {
     editModeSwitch.html('<div class="toggle-group"><input type="checkbox" name="on-off-switch" id="on-off-switch" ' + checked + ' tabindex="1"><label for="on-off-switch"></label><div class="onoffswitch pull-right" aria-hidden="true"><div class="onoffswitch-label"><div class="onoffswitch-inner"></div><div class="onoffswitch-switch"></div></div></div></div>');
     editModeSwitch.click(() => {
         this._data.isEditMode = !this._data.isEditMode;
-        this._build();
+        this._editorJSON();
+        this.milestones(this._userData.milestones);
     })
 
     const editModeHints = $('<div>', {
@@ -148,7 +149,11 @@ Roadmap.prototype._build = function() {
     editModeHints.html(editModeHints.html() + '&bull; Double click title to rename<br>');
     editModeHints.html(editModeHints.html() + '&bull; Double click connection to remove<br>');
     editModeHints.html(editModeHints.html() + '&bull; Drag to reorder<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Click nub to connect to another');
+    editModeHints.html(editModeHints.html() + '&bull; Click nub to connect to another<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Click "..." to open lightbox for edit<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Lightbox - Double click description to edit<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Lightbox - Click status icon to change<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Lightbox - Double click status text to edit');
 
     editModeSwitch.append(editModeHints);
     wrapper.append(overallProgress);
@@ -157,5 +162,11 @@ Roadmap.prototype._build = function() {
     container.append(innerWrapper);
     wrapper.append(container);
 
-    window.history.pushState('', '', '?q=' + btoa(JSON.stringify(this._userData)));
+    if (this._data.isEditMode) {
+        this._editorJSON();
+    } else {
+        $('#' + this._data.classnamePrefix + 'editorJSON').remove();
+    }
+
+    this._updateStorage();
 }

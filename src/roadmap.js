@@ -35,13 +35,13 @@ function Roadmap(wrapperDivId) {
     }
 
     $(() => {
-        var blob = window.location.href.split('q=')[1];
+        var blob = localStorage.getItem('roadmap');
 
         this._mouseMove();
         this._onResize();
         
         if (blob) {
-            this._userData = JSON.parse(atob(blob));
+            this._userData = JSON.parse(blob);
             
             this.columns(this._userData.columnNames);
             this.milestones(this._userData.milestones);
