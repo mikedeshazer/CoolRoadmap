@@ -7,6 +7,10 @@ Roadmap.prototype._build = function() {
         class: this._data.classnamePrefix + 'wrapper'
     });
 
+    if (this._data.columns.length <= 5) {
+        container.addClass(this._data.classnamePrefix + 'center');
+    }
+
     wrapper.empty();
     this._data.nodeSizes.width = -1;
     this._data.columns.forEach((columnData, idx) => {
@@ -30,8 +34,12 @@ Roadmap.prototype._build = function() {
 
             column.append(milestone);
             column.append(milestone2);
-            innerWrapper.append(column);
-            innerWrapper.append(this._buildColumn({empty: true}));
+            this._data.columns.forEach((columnData) => {
+                innerWrapper.append(column.clone());
+            });
+            if (this._data.isEditMode) {   
+                innerWrapper.append(column.clone());
+            }
             container.append(innerWrapper);
             wrapper.append(container);
 
@@ -41,7 +49,7 @@ Roadmap.prototype._build = function() {
                 bottom: parseInt($($('.' + this._data.classnamePrefix + 'milestone')[0]).css('margin-bottom').replace('px', '')),
                 right: parseInt($($('.' + this._data.classnamePrefix + 'column')[0]).css('margin-right').replace('px', ''))
             }
-
+            
             wrapper.empty();
             innerWrapper.empty();
             container.empty();
@@ -92,12 +100,12 @@ Roadmap.prototype._build = function() {
         innerWrapper.append(column);
     })
 
-    const column = this._buildColumn({
-        empty: true
-    });
-    innerWrapper.append(column);
-
     if (this._data.isEditMode) {
+        const column = this._buildColumn({
+            empty: true
+        });
+        innerWrapper.append(column);
+        
         container.addClass(this._data.classnamePrefix + 'editMode');
     }
 
@@ -134,6 +142,15 @@ Roadmap.prototype._build = function() {
         this._build();
     })
 
+    const editModeHints = $('<div>', {
+        class: this._data.classnamePrefix + 'editModeHints'
+    });
+    editModeHints.html(editModeHints.html() + '&bull; Double click title to rename<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Double click connection to remove<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Drag to reorder<br>');
+    editModeHints.html(editModeHints.html() + '&bull; Click nub to connect to another');
+
+    editModeSwitch.append(editModeHints);
     wrapper.append(overallProgress);
     wrapper.append(editModeSwitch);
 

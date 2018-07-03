@@ -10,78 +10,79 @@ Roadmap.prototype._buildConnection = function(milestoneData, connectionData, mil
     });
     let heightDiffIdx = milestoneData.rank - connectingMilestone.rank;
     let widthDiffIdx = connectingMilestone.belongsToColumn - milestoneData.belongsToColumn;
-
-    let heightDiff = heightDiffIdx * (this._data.nodeSizes.height + this._data.nodeSizes.spacing.bottom);
-    let widthDiff = widthDiffIdx * (this._data.nodeSizes.width + this._data.nodeSizes.spacing.right);
-    let isNoEnd = true;
     let startColor = '#2e3148';
     let endColor = '#2e3148';
-    const paddingAndArrow = 12;
-    let connectionPointPositions = milestoneElem.data('connectionPointPositions');
-    let transformDegrees = Math.atan2(heightDiff, widthDiff) * 180 / Math.PI;
 
     if (milestoneData.status === "complete") {
         startColor = this._data.columns[milestoneData.belongsToColumnIdx].color;
         endColor = this._data.columns[connectingMilestone.belongsToColumnIdx].color;
     }
-
-    connection.css('transform', 'rotate(' + transformDegrees + 'deg)');
     
-    if (transformDegrees < -30 && transformDegrees > -89) {
-        const hostPoint = connectionPointPositions[2];
-        const connectingPoint = connectionPointPositions[6];
+    this._elementLoaded('#' + this._data.classnamePrefix + 'milestone-' + milestoneData.id, (milestoneElem) => {
+        let connectionPointStart;
+        let connectionPointEnd;
+        let addArrow = false;
+        let paddingAndArrow = 0;
 
-        connection.css('left', hostPoint[1] + 'px');
+        if (heightDiffIdx === 0 && widthDiffIdx === -1) {
+            // to the immediate left
+            connectionPointStart = this._data.connectionPointPositions[7];
+            connectionPointEnd = this._data.connectionPointPositions[3];
+        } else if (heightDiffIdx === 0 && widthDiffIdx === 1) {
+            // to the immediate right
+            connectionPointStart = this._data.connectionPointPositions[3];
+            connectionPointEnd = this._data.connectionPointPositions[7];
+        } else if (widthDiffIdx === 0) {
+            // in same column
+            connectionPointStart = this._data.connectionPointPositions[1];
+            connectionPointEnd = this._data.connectionPointPositions[5];
+            paddingAndArrow = 12;
+            connection.removeClass(this._data.classnamePrefix + 'noEnd');
+        } else if (widthDiffIdx <= -1) {
+            // to the left
+            connectionPointStart = this._data.connectionPointPositions[0];
+            connectionPointEnd = this._data.connectionPointPositions[6];
+        } else if (widthDiffIdx >= 1) {
+            // to the right
+            connectionPointStart = this._data.connectionPointPositions[2];
+            connectionPointEnd = this._data.connectionPointPositions[4];
+        } else {
+            return;
+        }
 
-        heightDiff += this._data.nodeSizes.height;
-        widthDiff -= ((this._data.nodeSizes.width / 6) * 4);
-    } else if (transformDegrees < -91 && transformDegrees > -150) {
-        const hostPoint = connectionPointPositions[0];
-        const connectingPoint = connectionPointPositions[4];
+        const bounding = $('#' + this._data.classnamePrefix + 'milestone-' + connectingMilestone.id)[0].getBoundingClientRect();
+        const endWidth = bounding.left + connectionPointEnd[1];
+        const endHeight = bounding.top + connectionPointEnd[0];
 
-        connection.css('left', hostPoint[1] + 'px');
+        const boundingTo = milestoneElem[0].getBoundingClientRect();
+        const startWidth = boundingTo.left + connectionPointStart[1];
+        const startHeight = boundingTo.top + connectionPointStart[0];
 
-        heightDiff += this._data.nodeSizes.height;
-        widthDiff += ((this._data.nodeSizes.width / 6) * 4);
-    } else if (transformDegrees === -90) {
-        const hostPoint = connectionPointPositions[1];
-        const connectingPoint = connectionPointPositions[5];
+        const widthDiff =  endWidth - startWidth;
+        const heightDiff = endHeight - startHeight + paddingAndArrow;
 
-        connection.css('left', hostPoint[1] + 'px');
+        const transformDegrees = Math.atan2(heightDiff, widthDiff) * 180 / Math.PI;
+        const distance = Math.hypot(heightDiff, widthDiff);
 
-        heightDiff += this._data.nodeSizes.height + paddingAndArrow;
-        widthDiff = 0; 
-        isNoEnd = false;
-    } else if (transformDegrees < -149 || transformDegrees > 149) {
-        const hostPoint = connectionPointPositions[7];
-        const connectingPoint = connectionPointPositions[4];
+        connection.css('top',  connectionPointStart[0] + 'px');
+        connection.css('left', connectionPointStart[1] + 'px');
+        connection.css('transform', 'rotate(' + transformDegrees + 'deg)');
+        connection.css('width', distance + 'px');
+    });
 
-        connection.css('left', hostPoint[1] + 'px');
-        connection.css('top', (hostPoint[0] + 3) + 'px');
-
-        heightDiff += this._data.nodeSizes.height - (hostPoint[0] + 6);
-        widthDiff += (hostPoint[1] * -1) + (this._data.nodeSizes.width / 6) * 5;
-    } else {
-        const hostPoint = connectionPointPositions[3];
-        const connectingPoint = connectionPointPositions[7];
-
-        connection.css('left', hostPoint[1] + 'px');
-        connection.css('top', (hostPoint[0] + 3) + 'px');
-
-        heightDiff += this._data.nodeSizes.height - ((hostPoint[0] + 6) * 2);
-        widthDiff -= this._data.nodeSizes.width + 10;
-    }
-    
-    transformDegrees = Math.atan2(heightDiff, widthDiff) * 180 / Math.PI;
-    const distance = Math.hypot(heightDiff, widthDiff);
-
-    if (isNoEnd) {
-        connection.addClass(this._data.classnamePrefix + 'noEnd');
-    }
-
-    connection.css('transform', 'rotate(' + transformDegrees + 'deg)');
-    connection.css('width', distance + 'px');
+    connection.addClass(this._data.classnamePrefix + 'noEnd');
     connection.css('background-image', 'linear-gradient(to right, ' + startColor + ', ' + endColor + ')');
+
+    connection.dblclick(() => {
+        connection.remove();
+        milestoneData.connections.forEach((conenction, idx) => {
+            if (conenction === connectionData) {
+                this._userData.milestones[milestoneData.userDataIdx].connections.splice(idx, 1);
+            }
+        });
+        this.milestones(this._userData.milestones);
+    })
+
     this._pseudoStyle(connection, 'before', 'border-color', endColor);
 
     return connection;

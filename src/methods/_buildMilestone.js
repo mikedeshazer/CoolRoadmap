@@ -3,7 +3,9 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
         class: this._data.classnamePrefix + 'node ' + this._data.classnamePrefix + 'milestone'
     });
 
-    milestone.attr('id', this._data.classnamePrefix + 'milestone-' + Math.floor(Math.random() * (999999999 + 1)));
+    const id = Math.floor(Math.random() * (999999999 + 1));
+    milestone.attr('id', this._data.classnamePrefix + 'milestone-' + id);
+    milestoneData.id = id;
 
     if (milestoneData.spacer || milestoneData.dropTarget) {
         if (milestoneData.spacer) {
@@ -87,6 +89,35 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
 
         title.text(milestoneData.title);
         version.text(milestoneData.version);
+        
+        if (this._data.isEditMode) {
+            title.dblclick((e) => {
+                var elem = $(e.target);
+                var isEditable = elem.is('.editable');
+                elem.prop('contenteditable', !isEditable).toggleClass('editable');
+                elem.focus();
+                document.execCommand('selectAll', false, null);
+
+                elem.keypress(function(e) {
+                    if(e.which == 13) {
+                        e.preventDefault();
+                        elem.blur();
+                    }
+                });
+
+                elem.one('blur', (e) => {
+                    var elem = $(e.target);
+                    var isEditable = elem.is('.editable');
+                    elem.prop('contenteditable', !isEditable).toggleClass('editable');
+
+                    var parent = $('#' + e.target.parentElement.id);
+                    var milestoneData = parent.data('milestoneData');
+                    this._userData.milestones[milestoneData.userDataIdx].title = elem.text();
+
+                    this.milestones(this._userData.milestones);
+                })
+            })
+        }
 
         milestone.append(title);
         milestone.append(version);
@@ -94,7 +125,7 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
 
         if (milestoneData.status === 'complete') {
             if (this._data.columns[milestoneData.belongsToColumnIdx].color) {
-                this._pseudoStyle(milestone, 'after', 'background-color', this._data.columns[milestoneData.belongsToColumnIdx].color)
+                this._pseudoStyle(milestone, 'after', 'background-color', this._data.columns[milestoneData.belongsToColumnIdx].color + ' !important')
                 milestone.css('border-color', this._data.columns[milestoneData.belongsToColumnIdx].color);
             }
 
@@ -113,22 +144,23 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
         if (!hasNextAboveConnection && nextAbove) {
             milestoneData.connections.push([nextAbove.belongsToColumn, nextAbove.rank]);
         }
-
-        const connectionPointPositions = [
+        
+        this._data.connectionPointPositions = [
             //top
-            [-10, this._data.nodeSizes.width / 6, 0],
-            [-10, (this._data.nodeSizes.width / 6) * 3, 0],
-            [-10, (this._data.nodeSizes.width / 6) * 5, 0],
+            [-10, this._data.nodeSizes.width / 4, 0],
+            [-10, (this._data.nodeSizes.width / 4) * 2, 0],
+            [-10, (this._data.nodeSizes.width / 4) * 3, 0],
             //right
-            [(this._data.nodeSizes.height / 2) - 5, this._data.nodeSizes.width, 90],
+            [(this._data.nodeSizes.height / 2) - 5, this._data.nodeSizes.width - 4, 90],
             //bottom
-            [this._data.nodeSizes.height - 3, this._data.nodeSizes.width / 6, 180],
-            [this._data.nodeSizes.height - 3, (this._data.nodeSizes.width / 6) * 3, 180],
-            [this._data.nodeSizes.height - 3, (this._data.nodeSizes.width / 6) * 5, 180],
+            [this._data.nodeSizes.height - 3, this._data.nodeSizes.width / 4, 0],
+            [this._data.nodeSizes.height - 3, (this._data.nodeSizes.width / 4) * 2, 0],
+            [this._data.nodeSizes.height - 3, (this._data.nodeSizes.width / 4) * 3, 0],
             //left
             [(this._data.nodeSizes.height / 2) - 5, -9, 270],
         ];
 
+        const connectionPointPositions = this._data.connectionPointPositions.slice(0);
         if (milestoneData.rank === this._data.highestRank) {
             connectionPointPositions[0] = null;
             connectionPointPositions[1] = null;
@@ -137,11 +169,11 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
         if (milestoneData.belongToColumn === this._data.columns.length) {
             connectionPointPositions[3] = null;
         }
-        // if (milestoneData.rank === 0) {
+        if (milestoneData.rank === 0) {
             connectionPointPositions[4] = null;
             connectionPointPositions[5] = null;
             connectionPointPositions[6] = null;
-        // }
+        }
         if (milestoneData.belongToColumnIdx === 0) {
             connectionPointPositions[7] = null;
         }
@@ -162,7 +194,42 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                     if (milestoneData.status === 'complete' && this._data.columns[milestoneData.belongsToColumnIdx].color) {
                         connectionPoint.css('background-color', this._data.columns[milestoneData.belongsToColumnIdx].color);
                     }
-            
+
+                    connectionPoint.click(() => {
+                        if (!this._data.connecting) {
+                            this._data.connecting = {
+                                milestoneData: milestoneData,
+                                startPoint: Object.assign({}, this._data.mouse)
+                            }
+
+                            const connection = $('<div>', {
+                                class: this._data.classnamePrefix + 'arrow'
+                            });
+
+                            connection.css('left', this._data.mouse.x);
+                            connection.css('top', this._data.mouse.y);
+                            connection.addClass(this._data.classnamePrefix + 'noEnd');
+                            connection.attr('id', this._data.classnamePrefix + 'connectingArrow');
+
+                            $('body').append(connection);
+                        } else {
+                            $('#' + this._data.classnamePrefix + 'connectingArrow').remove();
+
+                            if (milestoneData.rank >= this._data.connecting.milestoneData.rank) {
+                                this._userData.milestones[this._data.connecting.milestoneData.userDataIdx].connections.push(
+                                    [milestoneData.belongsToColumn, milestoneData.rank]
+                                );
+                            } else {
+                                this._userData.milestones[milestoneData.userDataIdx].connections.push(
+                                    [this._data.connecting.milestoneData.belongsToColumn, this._data.connecting.milestoneData.rank]
+                                );
+                            }
+
+                            this._data.connecting = false;
+                            this.milestones(this._userData.milestones);
+                        }
+                    })
+
                     milestone.append(connectionPoint);
                 }
             });
