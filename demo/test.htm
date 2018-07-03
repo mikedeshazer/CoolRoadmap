@@ -1,66 +1,25 @@
 <html>
+    <head>
+        <title>Cool Roadmap Demo</title>
+        <link rel="stylesheet" href="../dist/CoolRoadmap.min.css">
+        <style>
+            body {
+                background-color: #15182d;
+                color: #FFF;
+                font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen,Ubuntu,Cantarell,Fira Sans,Droid Sans,Helvetica Neue,sans-serif;
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Roadmap</h1>
 
-<head>
+        <div id='CoolRoadmapWrapper'></div>
 
-	<link rel="stylesheet" href="../dist/CoolRoadmap.min.css">
-	<script src='../dist/CoolRoadmap.min.js'></script>
-
-
-
-	<link rel="stylesheet" href="css/style.css">
-	<script src="js/jquery.js"></script>
-	<script src="js/test.js"></script>
-
-</head>
-
-<div id="categoriesBox" class="compBox">
-  <h4>Add Categories First</h4>
-  	<form action="javascript:addCategory()" id="catForm">
-  		Title : <input type="text" id="title"><br>
-  		<button type="submit">Add Category</button>
-
-  	</form>
-
-</div>
-
-<div id="milestonesBox" class="compBox">
-	 <h4>Add Milestones To Categories</h4>
-  <form action="javascript:addMilestone()" id="milesForm">
-
-
-Title : <input name="title" type="text" ><br>
-Description : <input name="descriptionHTML" type="text" ><br>
-Belongs to Column : <input name="belongsToColumn" type="number" ><br>
-difficulty : <input name="difficulty" type="text" ><br>
-rank : <input name="rank" type="text" ><br>
-released : <input name="released" type="text" ><br>
-status: <input name="status" type="text" ><br>
-
-  		<button type="submit">Add Milestone</button>
-<br><br><br><br>
-  	</form>
-  
-</div>
-
-<div id="renderingBox" class="compBox">
-  
-  
-</div>
-
-<div id="sourceBox" class="compBox">
-  <textarea id="catJSON">
-  	[]
-  </textarea>
-
-
-  <br><br>
-
-  <textarea id="milesJSON">
-  	[]
-  </textarea>
-  
-</div>
-
-
-
+        <script src='https://code.jquery.com/jquery-3.3.1.min.js'></script>
+        <script src='../dist/CoolRoadmap.min.js'></script>
+        <script>
+            var myroadmap = new Roadmap('CoolRoadmapWrapper');
+        </script>
+    </body>
 </html>

@@ -168,5 +168,5 @@ Roadmap.prototype._build = function() {
         $('#' + this._data.classnamePrefix + 'editorJSON').remove();
     }
 
-    window.history.pushState('', '', '?q=' + btoa(JSON.stringify(this._userData)));
+    this._updateStorage();
 }

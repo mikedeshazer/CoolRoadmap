@@ -34,7 +34,7 @@ Roadmap.prototype._editorJSON = function() {
         editorJSON.append(editorJSONToggle);
         editorJSON.append(editorJSONpre);
         $('body').append(editorJSON);
-    } else {
-        $('#' + this._data.classnamePrefix + 'editorJSON pre').html(JSON.stringify(this._userData, null, 4).replace(/\n/g, '<br>'));
     }
+    
+    $('#' + this._data.classnamePrefix + 'editorJSON pre').html(JSON.stringify(this._userData, null, 4).replace(/\n/g, '<br>'));
 }
