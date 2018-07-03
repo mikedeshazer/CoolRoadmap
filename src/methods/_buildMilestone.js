@@ -75,9 +75,16 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                     $('.' + this._data.classnamePrefix + 'container').removeClass(this._data.classnamePrefix + 'isDragging');
                 }
             });
+
+            const lightboxActivateOverlay = $('<div>', {
+                class: this._data.classnamePrefix + 'lightboxActivateOverlay'
+            })
+            lightboxActivateOverlay.click(() => {
+                this._showLightbox(milestoneData, -1, false);
+            })
+            milestone.append(lightboxActivateOverlay);
         } else {
             milestone.click(() => {
-                console.log('d');
                 this._showLightbox(milestoneData, -1, false);
             })
         }
