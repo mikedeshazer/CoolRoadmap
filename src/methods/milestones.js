@@ -46,7 +46,7 @@ Roadmap.prototype.milestones = function(milestones) {
         columnRanks[milestone.belongsToColumnIdx].push(milestone.rank);
     });
 
-    if (this._data.isEditMode) {
+    if (this._data.isEditMode && milestones.length > 0) {
         this._data.highestRank += 1;
     }
 

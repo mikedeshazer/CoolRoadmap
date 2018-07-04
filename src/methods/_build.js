@@ -84,7 +84,6 @@ Roadmap.prototype._build = function() {
             }
 
             const milestone = this._buildMilestone(milestoneData);
-            milestone.data('milestoneData', milestoneData);
 
             if (milestoneData.connections) {
                 milestoneData.connections.forEach((connectionData) => {

@@ -11,26 +11,28 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
         if (milestoneData.spacer) {
             milestone.addClass(this._data.classnamePrefix + 'spacer');
 
-            const title = $('<div>', {
-                class: this._data.classnamePrefix + 'title'
-            });
-            const version = $('<div>');
-    
-            title.html("&plus;");
-            version.text("Add Milestone");
+            if (this._data.isEditMode) {
+                const title = $('<div>', {
+                    class: this._data.classnamePrefix + 'title'
+                });
+                const version = $('<div>');
+        
+                title.html("&plus;");
+                version.text("Add Milestone");
 
-            milestone.append(title);
-            milestone.append(version);
+                milestone.append(title);
+                milestone.append(version);
 
-            milestone.click(() => {
-                this._userData.milestones.push({
-                    belongsToColumn: milestoneData.belongsToColumn,
-                    rank: milestoneData.rank,
-                    title: 'New Milestone'
+                milestone.click((e) => {
+                    this._userData.milestones.push({
+                        belongsToColumn: milestoneData.belongsToColumn,
+                        rank: milestoneData.rank,
+                        title: 'New Milestone'
+                    })
+
+                    this.milestones(this._userData.milestones);
                 })
-
-                this.milestones(this._userData.milestones);
-            })
+            }
         } else {
             milestone.addClass(this._data.classnamePrefix + 'dropTarget');
         }
@@ -43,17 +45,15 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                 "ui-droppable-hover": this._data.classnamePrefix + 'hover'
                 },
                 drop: (event, ui) => {
-                    let draggedId = event.originalEvent.target.id;
-
-                    if (!draggedId) {
-                        draggedId = event.originalEvent.target.parentElement.id;
-                    }
+                    let draggedId = $(ui.draggable).attr('id');
 
                     const targetElem = $('#' + event.target.id);
                     const sourceElem = $('#' + draggedId);
 
                     const targetMilestoneData = targetElem.data('milestoneData');
                     const sourceMilestoneData = sourceElem.data('milestoneData');
+
+                    console.log(targetMilestoneData, sourceMilestoneData);
 
                     if (!targetMilestoneData.spacer) {
                         const columnMilestones = this._getMilestones(targetMilestoneData.belongsToColumnIdx);
@@ -78,6 +78,8 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                     sourceMilestoneData.belongsToColumn = targetMilestoneData.belongsToColumn;
                     sourceMilestoneData.rank = targetMilestoneData.rank;
                     sourceMilestoneData.connections = [];
+
+                    console.log(sourceMilestoneData);
 
                     this._userData.milestones.push(sourceMilestoneData);
 
@@ -278,5 +280,6 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
         }
     }
 
+    milestone.data('milestoneData', milestoneData);
     return milestone;
 }
