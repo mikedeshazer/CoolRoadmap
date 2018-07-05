@@ -97,8 +97,23 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
             removeIcon.text('X');
 
             removeIcon.click(() => {
-                this._userData.milestones.splice(milestoneData.userDataIdx, 1);
+                if (milestoneData.rank === 0) {
+                    const columnMilestones = this._getMilestones(milestoneData.belongsToColumnIdx);
+                    let shouldSubtract = false;
 
+                    columnMilestones.reverse().forEach((milestone) => {
+                        console.log(milestone);
+                        if (milestone.spacer) {
+                            return;
+                        } else if (milestone.userDataIdx === milestoneData.userDataIdx) {
+                            shouldSubtract = true;
+                        } else if (shouldSubtract) {
+                            this._userData.milestones[milestone.userDataIdx].rank--;
+                        }
+                    });
+                }
+
+                this._userData.milestones.splice(milestoneData.userDataIdx, 1);
                 this.milestones(this._userData.milestones);
             })
 
@@ -195,7 +210,7 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
             [-10, (this._data.nodeSizes.width / 4) * 2, 0],
             [-10, (this._data.nodeSizes.width / 4) * 3, 0],
             //right
-            [(this._data.nodeSizes.height / 2) - 5, this._data.nodeSizes.width - 4, 90],
+            [(this._data.nodeSizes.height / 2) - 5, this._data.nodeSizes.width - 1, 90],
             //bottom
             [this._data.nodeSizes.height - 3, this._data.nodeSizes.width / 4, 0],
             [this._data.nodeSizes.height - 3, (this._data.nodeSizes.width / 4) * 2, 0],

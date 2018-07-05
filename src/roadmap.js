@@ -39,6 +39,7 @@ function Roadmap(wrapperDivId) {
 
         this._mouseMove();
         this._onResize();
+        this._onScroll();
         
         if (blob) {
             this._userData = JSON.parse(blob);
