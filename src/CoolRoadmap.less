@@ -164,6 +164,10 @@
     overflow-x: auto;
     margin: 0 auto;
 
+    .editable {
+        outline: 2px solid rgb(77, 144, 254) !important;
+    }
+
     .@{classNamePrefix}remove {
         width: 12px;
         height: 12px;
@@ -323,6 +327,7 @@
                     &.@{classNamePrefix}droppable:hover {
                         opacity: 1;
                         cursor: pointer;
+                        border-color:  #3f54f3 !important;
                     }
 
                     &:after {
@@ -331,17 +336,16 @@
                 }
 
                 &.@{classNamePrefix}dropTarget {
-                    height: 0px;
-                    background: 0 0;
+                    background-color: rgba(46, 49, 72, 0.4);
                     position: absolute;
-                    border-bottom: none;
-                    margin: 0;
-                    margin-top: -20px;
-                    visibility: hidden;
                     padding-top: 10px;
-                    border-left: none;
-                    border-right: none;
                     border-radius: 0;
+                    margin-top: -29px;
+                    height: 2px;
+                    margin-bottom: 0;
+                    border-width: 4px;
+                    padding-bottom: 0;
+                    visibility: hidden;
 
                     &:after {
                         display: none;
@@ -350,17 +354,17 @@
 
                 &.@{classNamePrefix}active {
                     visibility: visible;
-                    border: 2px solid rgba(46, 49, 72, 0.4);
+                    border: 2px solid #2e3148;
+                    opacity: 1 !important;
 
                     div {
                         display: none;
                     }
 
                     &.@{classNamePrefix}dropTarget {
-                        border-width: 1px;
+                        border-width: 4px;
                         border-left: none;
                         border-right: none;
-                        border-bottom: none;
                     }
                 }
 

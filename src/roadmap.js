@@ -15,7 +15,7 @@ function Roadmap(wrapperDivId) {
         nodeSizes: {
             width: -1
         },
-        isEditMode: false,
+        isEditMode: true,
         classnamePrefix: 'coolRoadmap-',
         wrapperDivId: wrapperDivId,
         columns: [],
