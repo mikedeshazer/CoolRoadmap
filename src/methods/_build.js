@@ -145,14 +145,6 @@ Roadmap.prototype._build = function() {
     const editModeHints = $('<div>', {
         class: this._data.classnamePrefix + 'editModeHints'
     });
-    editModeHints.html(editModeHints.html() + '&bull; Double click title to rename<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Double click connection to remove<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Drag to reorder<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Click nub to connect to another<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Click "..." to open lightbox for edit<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Lightbox - Double click description to edit<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Lightbox - Click status icon to change<br>');
-    editModeHints.html(editModeHints.html() + '&bull; Lightbox - Double click status text to edit');
 
     editModeSwitch.append(editModeHints);
     wrapper.append(overallProgress);
