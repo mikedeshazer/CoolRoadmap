@@ -20,7 +20,6 @@ Roadmap.prototype._buildColumn = function(columnData) {
     });
     
     if (this._data.isEditMode) {
-
         removeIcon.text('X');
 
         removeIcon.click(() => {
@@ -56,29 +55,31 @@ Roadmap.prototype._buildColumn = function(columnData) {
         headerProgressBar.append(headerProgressBarContent);
         headerText.text(columnData.name);
 
-        headerText.dblclick((e) => {
-            var elem = $(e.target);
-            var isEditable = elem.is('.editable');
-            elem.prop('contenteditable', !isEditable).toggleClass('editable');
-            elem.focus();
-            document.execCommand('selectAll', false, null);
-
-            elem.keypress(function(e) {
-                if(e.which == 13) {
-                    e.preventDefault();
-                    elem.blur();
-                }
-            });
-
-            elem.one('blur', (e) => {
+        if (this._data.isEditMode) {
+            headerText.dblclick((e) => {
                 var elem = $(e.target);
                 var isEditable = elem.is('.editable');
                 elem.prop('contenteditable', !isEditable).toggleClass('editable');
+                elem.focus();
+                document.execCommand('selectAll', false, null);
 
-                this._userData.columnNames[columnData.columnIdx] = elem.text();
-                this.milestones(this._userData.milestones);
+                elem.keypress(function(e) {
+                    if(e.which == 13) {
+                        e.preventDefault();
+                        elem.blur();
+                    }
+                });
+
+                elem.one('blur', (e) => {
+                    var elem = $(e.target);
+                    var isEditable = elem.is('.editable');
+                    elem.prop('contenteditable', !isEditable).toggleClass('editable');
+
+                    this._userData.columnNames[columnData.columnIdx] = elem.text();
+                    this.milestones(this._userData.milestones);
+                })
             })
-        })
+        }
 
         header.append(headerText);
         header.append(headerProgressBar);

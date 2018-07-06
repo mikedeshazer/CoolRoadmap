@@ -167,5 +167,9 @@ Roadmap.prototype._build = function() {
         $('#' + this._data.classnamePrefix + 'editorJSON').remove();
     }
 
+    if (this._data.scrollPos) {
+        $(document).scrollTop(this._data.scrollPos);
+    }
+
     this._updateStorage();
 }
