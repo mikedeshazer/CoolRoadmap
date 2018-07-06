@@ -170,6 +170,10 @@ Roadmap.prototype._build = function() {
     if (this._data.scrollPos) {
         $(document).scrollTop(this._data.scrollPos);
     }
+    
+    if (this._data.wrapperScrollPos) {
+        $('#' + this._data.wrapperDivId).scrollTop(this._data.wrapperScrollPos);
+    }
 
     this._updateStorage();
 }
