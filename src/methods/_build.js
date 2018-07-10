@@ -119,7 +119,7 @@ Roadmap.prototype._build = function() {
     });
 
     overallProgressInner.css('width', this._data.overallProgress + '%');
-    overallProgressContent.text(this._data.overallProgress + '% Complete');
+    overallProgressContent.text((isNaN(this._data.overallProgress) ? 0 : this._data.overallProgress) + '% Complete');
     overallProgress.append(overallProgressInner);
     overallProgress.append(overallProgressContent);
 

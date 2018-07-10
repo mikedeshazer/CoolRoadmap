@@ -6,6 +6,7 @@ Roadmap.prototype.milestones = function(milestones) {
     this._data.milestones = [];
     this._userData.milestones = milestones;
     this._data.highestRank = 0;
+    this._data.lowestRank = 0;
 
     const columnRanks = [];
 
@@ -25,6 +26,10 @@ Roadmap.prototype.milestones = function(milestones) {
 
         if (milestone.rank > this._data.highestRank) {
             this._data.highestRank = milestone.rank;
+        }
+
+        if (milestone.rank < this._data.lowestRank) {
+            this._data.lowestRank = milestone.rank;
         }
 
         if (!milestone.connections) {
@@ -51,7 +56,7 @@ Roadmap.prototype.milestones = function(milestones) {
     }
 
     columnRanks.forEach((columnRankData, idx) => {
-        let count = 0;
+        let count = this._data.lowestRank;
         while (count <= this._data.highestRank) {
             if (columnRankData.indexOf(count) === -1) {
                 this._data.milestones.push({
@@ -63,6 +68,15 @@ Roadmap.prototype.milestones = function(milestones) {
             }
 
             count ++;
+        }
+
+        if (this._data.lowestRank != this._data.highestRank) {
+            this._data.milestones.push({
+                spacer: true,
+                belongsToColumn: idx + 1,
+                belongsToColumnIdx: idx,
+                rank: this._data.lowestRank - 1
+            });
         }
     });
 

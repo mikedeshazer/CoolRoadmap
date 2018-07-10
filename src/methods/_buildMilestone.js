@@ -79,8 +79,6 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                     sourceMilestoneData.rank = targetMilestoneData.rank;
                     sourceMilestoneData.connections = [];
 
-                    console.log(sourceMilestoneData);
-
                     this._userData.milestones.push(sourceMilestoneData);
 
                     this.milestones(this._userData.milestones);
@@ -132,9 +130,18 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                 class: this._data.classnamePrefix + 'lightboxActivateOverlay'
             })
             lightboxActivateOverlay.click(() => {
-                this._showLightbox(milestoneData, -1, false);
+                if (!this._data.connecting) {
+                    this._showLightbox(milestoneData, -1, false);
+                }
             })
             milestone.append(lightboxActivateOverlay);
+
+            
+            milestone.click(() => {
+                if (this._data.connecting) {
+                    doMilestoneConnect.apply(this);
+                }
+            })
         } else {
             milestone.click(() => {
                 this._showLightbox(milestoneData, -1, false);
@@ -256,10 +263,12 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
 
                     connectionPoint.click(() => {
                         if (!this._data.connecting) {
-                            this._data.connecting = {
-                                milestoneData: milestoneData,
-                                startPoint: Object.assign({}, this._data.mouse)
-                            }
+                            setTimeout(() => {
+                                this._data.connecting = {
+                                    milestoneData: milestoneData,
+                                    startPoint: Object.assign({}, this._data.mouse)
+                                }
+                            }, 0);
 
                             const connection = $('<div>', {
                                 class: this._data.classnamePrefix + 'arrow'
@@ -272,20 +281,7 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
 
                             $('body').append(connection);
                         } else {
-                            $('#' + this._data.classnamePrefix + 'connectingArrow').remove();
-
-                            if (milestoneData.rank >= this._data.connecting.milestoneData.rank) {
-                                this._userData.milestones[this._data.connecting.milestoneData.userDataIdx].connections.push(
-                                    [milestoneData.belongsToColumn, milestoneData.rank]
-                                );
-                            } else {
-                                this._userData.milestones[milestoneData.userDataIdx].connections.push(
-                                    [this._data.connecting.milestoneData.belongsToColumn, this._data.connecting.milestoneData.rank]
-                                );
-                            }
-
-                            this._data.connecting = false;
-                            this.milestones(this._userData.milestones);
+                            doMilestoneConnect.apply(this);
                         }
                     })
 
@@ -293,6 +289,23 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
                 }
             });
         }
+    }
+
+    function doMilestoneConnect() {
+        $('#' + this._data.classnamePrefix + 'connectingArrow').remove();
+
+        if (milestoneData.rank >= this._data.connecting.milestoneData.rank) {
+            this._userData.milestones[this._data.connecting.milestoneData.userDataIdx].connections.push(
+                [milestoneData.belongsToColumn, milestoneData.rank]
+            );
+        } else {
+            this._userData.milestones[milestoneData.userDataIdx].connections.push(
+                [this._data.connecting.milestoneData.belongsToColumn, this._data.connecting.milestoneData.rank]
+            );
+        }
+
+        this._data.connecting = false;
+        this.milestones(this._userData.milestones);
     }
 
     milestone.data('milestoneData', milestoneData);
