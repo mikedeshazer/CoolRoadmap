@@ -148,7 +148,11 @@ Roadmap.prototype._build = function() {
 
     editModeSwitch.append(editModeHints);
     wrapper.append(overallProgress);
-    wrapper.append(editModeSwitch);
+    
+    if ($(location).attr('host') === '') {
+        // local dev only
+        wrapper.append(editModeSwitch);
+    }
 
     container.append(innerWrapper);
     wrapper.append(container);

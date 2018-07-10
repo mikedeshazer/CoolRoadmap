@@ -187,7 +187,7 @@ Roadmap.prototype._buildMilestone = function(milestoneData) {
 
         milestone.append(title);
         milestone.append(version);
-        milestone.css('z-index', milestoneData.rank);
+        milestone.css('z-index', Math.abs(milestoneData.rank));
 
         if (milestoneData.status === 'complete') {
             if (this._data.columns[milestoneData.belongsToColumnIdx].color) {
