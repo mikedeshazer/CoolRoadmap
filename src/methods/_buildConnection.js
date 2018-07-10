@@ -40,7 +40,7 @@ Roadmap.prototype._buildConnection = function(milestoneData, connectionData, mil
             connection.removeClass(this._data.classnamePrefix + 'noEnd');
 
             const nextAbove = this._getNextAboveMilestone(milestoneData.belongsToColumnIdx, milestoneData.rank);
-            if (nextAbove.rank !== connectingMilestone.rank) {
+            if (!nextAbove || nextAbove.rank !== connectingMilestone.rank) {
                 connection.remove();
                 milestoneData.connections.forEach((conenction, idx) => {
                     if (conenction === connectionData) {
