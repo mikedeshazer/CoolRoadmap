@@ -36,10 +36,10 @@ Roadmap.prototype._buildColumn = function(columnData) {
 
     if (columnData.empty) {
         column.addClass(this._data.classnamePrefix + 'empty');
-        headerText.html('&plus; New Column');
+        headerText.html('&plus; Add Category');
 
         header.click((e) => {
-            this._userData.columnNames.push('New Column');
+            this._userData.columnNames.push('Doulbe Click To Name');
             this.milestones(this._userData.milestones);
         });
 
