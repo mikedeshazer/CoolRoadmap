@@ -9,12 +9,15 @@ Roadmap.prototype.milestones = function(milestones) {
     this._data.lowestRank = 0;
 
     const columnRanks = [];
+    const length = milestones.length;
 
     this._userData.columnNames.forEach(() => {
         columnRanks.push([]);
     })
 
-    milestones.forEach((milestone, idx) => {
+    for (let idx = 0; idx < length; idx++) {
+        const milestone = milestones[idx];
+
         if (typeof milestone.rank !== 'number') {
             console.log(milestone);
             throw new Error('milestone rank must be an number');
@@ -49,13 +52,16 @@ Roadmap.prototype.milestones = function(milestones) {
         }
 
         columnRanks[milestone.belongsToColumnIdx].push(milestone.rank);
-    });
+    };
 
     if (this._data.isEditMode && milestones.length > 0) {
         this._data.highestRank += 1;
     }
 
-    columnRanks.forEach((columnRankData, idx) => {
+    const columnRanksLength = columnRanks.length;
+    for (let idx = 0; idx < columnRanksLength; idx++) {
+        const columnRankData = columnRanks[idx];
+        
         let count = this._data.lowestRank;
         while (count <= this._data.highestRank) {
             if (columnRankData.indexOf(count) === -1) {
@@ -78,7 +84,7 @@ Roadmap.prototype.milestones = function(milestones) {
                 rank: this._data.lowestRank - 1
             });
         }
-    });
+    };
 
     this._data.milestones.sort((a, b) => {
         if (a.rank > b.rank) return -1;

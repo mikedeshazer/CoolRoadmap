@@ -1,4 +1,13 @@
 Roadmap.prototype._build = function() {
+    if (this._data.buildTimeout) {
+        clearTimeout(this._data.buildTimeout);
+    }
+
+    this._data.buildTimeout = setTimeout(this._doActualBuild.bind(this), 100);
+}
+
+Roadmap.prototype._doActualBuild = function() {
+    $('#pseudoStyles').remove();
     const wrapper = $('#' + this._data.wrapperDivId);
     const container = $('<div>', {
         class: this._data.classnamePrefix + 'container'
@@ -58,8 +67,11 @@ Roadmap.prototype._build = function() {
 
         const columnMilestones = this._getMilestones(idx);
         const columnMilestoneVersions = this._getVersions(columnMilestones, '2 decimals', 1);
+        const length = columnMilestones.length;
 
-        columnMilestones.forEach((milestoneData, idx) => {
+        for (let idx = 0; idx < length; idx++) {
+            const milestoneData = columnMilestones[idx];
+            
             if (this._data.isEditMode && !milestoneData.spacer && (idx === 0 || !columnMilestones[idx - 1].spacer)) {
                 const milestoneDropTarget = this._buildMilestone({
                     dropTarget: true,
@@ -94,7 +106,7 @@ Roadmap.prototype._build = function() {
             }
 
             column.append(milestone);
-        });
+        };
 
         innerWrapper.append(column);
     })
